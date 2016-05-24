@@ -95,7 +95,7 @@ bool set_user_non_blocking(int d, state_type& state,
     int flag = (value ? (result | O_NONBLOCK) : (result & ~O_NONBLOCK));
     result = error_wrapper(::fcntl(d, F_SETFL, flag), ec);
   }
-#else // defined(__SYMBIAN32__)
+#else // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)
   ioctl_arg_type arg = (value ? 1 : 0);
   int result = error_wrapper(::ioctl(d, FIONBIO, &arg), ec);
 #endif // defined(__SYMBIAN32__) || defined(__EMSCRIPTEN__)

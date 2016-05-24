@@ -1760,6 +1760,9 @@ int select(int nfds, fd_set* readfds, fd_set* writefds,
     fd_set* exceptfds, timeval* timeout, asio::error_code& ec)
 {
   clear_last_error();
+#if defined(__EMSCRIPTEN__)
+  exceptfds = 0;
+#endif // defined(__EMSCRIPTEN__)
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
   if (!readfds && !writefds && !exceptfds && timeout)
   {

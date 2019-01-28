@@ -774,7 +774,7 @@ signed_size_type recv(socket_type s, buf* bufs, size_t count,
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = asio::error::connection_refused;
   else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
-    ec.assign(0, ec.category());
+    result = 0;
   if (result != 0)
     return socket_error_retval;
   ec = asio::error_code();
@@ -928,7 +928,7 @@ signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = asio::error::connection_refused;
   else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
-    ec.assign(0, ec.category());
+    result = 0;
   if (result != 0)
     return socket_error_retval;
   ec = asio::error_code();

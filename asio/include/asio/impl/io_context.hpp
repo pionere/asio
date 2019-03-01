@@ -26,6 +26,8 @@
 
 #include "asio/detail/push_options.hpp"
 
+#if !defined(GENERATING_DOCUMENTATION)
+
 namespace asio {
 
 template <typename Service>
@@ -46,6 +48,8 @@ inline detail::io_context_impl& use_service<detail::io_context_impl>(
 }
 
 } // namespace asio
+
+#endif // !defined(GENERATING_DOCUMENTATION)
 
 #include "asio/detail/pop_options.hpp"
 

@@ -23,6 +23,8 @@
 
 namespace asio {
 
+#if !defined(GENERATING_DOCUMENTATION)
+
 template <typename Service>
 inline Service& use_service(execution_context& e)
 {
@@ -32,7 +34,6 @@ inline Service& use_service(execution_context& e)
   return e.service_registry_->template use_service<Service>();
 }
 
-#if !defined(GENERATING_DOCUMENTATION)
 template <typename Service, typename... Args>
 Service& make_service(execution_context& e, Args&&... args)
 {
@@ -43,8 +44,6 @@ Service& make_service(execution_context& e, Args&&... args)
   svc.release();
   return result;
 }
-
-#endif // !defined(GENERATING_DOCUMENTATION)
 
 template <typename Service>
 inline void add_service(execution_context& e, Service* svc)
@@ -63,6 +62,8 @@ inline bool has_service(execution_context& e)
 
   return e.service_registry_->template has_service<Service>();
 }
+
+#endif // !defined(GENERATING_DOCUMENTATION)
 
 inline execution_context& execution_context::service::context()
 {

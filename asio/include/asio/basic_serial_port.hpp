@@ -419,7 +419,7 @@ public:
    * asio::serial_port_base::character_size
    */
   template <typename GettableSerialPortOption>
-  void get_option(GettableSerialPortOption& option)
+  void get_option(GettableSerialPortOption& option) const
   {
     asio::error_code ec;
     this->get_service().get_option(this->get_implementation(), option, ec);
@@ -444,7 +444,7 @@ public:
    */
   template <typename GettableSerialPortOption>
   ASIO_SYNC_OP_VOID get_option(GettableSerialPortOption& option,
-      asio::error_code& ec)
+      asio::error_code& ec) const
   {
     this->get_service().get_option(this->get_implementation(), option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);

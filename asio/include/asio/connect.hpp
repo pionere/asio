@@ -672,7 +672,7 @@ Iterator connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
  */
 template <typename Protocol ASIO_SVC_TPARAM,
     typename EndpointSequence, typename RangeConnectHandler>
-ASIO_INITFN_RESULT_TYPE(RangeConnectHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(RangeConnectHandler,
     void (asio::error_code, typename Protocol::endpoint))
 async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
     const EndpointSequence& endpoints,
@@ -719,7 +719,7 @@ async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
  */
 template <typename Protocol ASIO_SVC_TPARAM,
     typename Iterator, typename IteratorConnectHandler>
-ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
     Iterator begin, IteratorConnectHandler&& handler,
@@ -778,7 +778,7 @@ async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
  */
 template <typename Protocol ASIO_SVC_TPARAM,
     typename Iterator, typename IteratorConnectHandler>
-ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
     Iterator begin, Iterator end,
@@ -882,7 +882,7 @@ async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
  */
 template <typename Protocol ASIO_SVC_TPARAM, typename EndpointSequence,
     typename ConnectCondition, typename RangeConnectHandler>
-ASIO_INITFN_RESULT_TYPE(RangeConnectHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(RangeConnectHandler,
     void (asio::error_code, typename Protocol::endpoint))
 async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
     const EndpointSequence& endpoints, ConnectCondition connect_condition,
@@ -940,7 +940,7 @@ async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
  */
 template <typename Protocol ASIO_SVC_TPARAM, typename Iterator,
     typename ConnectCondition, typename IteratorConnectHandler>
-ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
     Iterator begin, ConnectCondition connect_condition,
@@ -1049,7 +1049,7 @@ async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
  */
 template <typename Protocol ASIO_SVC_TPARAM, typename Iterator,
     typename ConnectCondition, typename IteratorConnectHandler>
-ASIO_INITFN_RESULT_TYPE(IteratorConnectHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(IteratorConnectHandler,
     void (asio::error_code, Iterator))
 async_connect(basic_socket<Protocol ASIO_SVC_TARG>& s,
     Iterator begin, Iterator end, ConnectCondition connect_condition,

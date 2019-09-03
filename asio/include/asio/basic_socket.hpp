@@ -848,7 +848,7 @@ public:
    * @endcode
    */
   template <typename ConnectHandler>
-  ASIO_INITFN_RESULT_TYPE(ConnectHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ConnectHandler,
       void (asio::error_code))
   async_connect(const endpoint_type& peer_endpoint,
       ConnectHandler&& handler)
@@ -1707,7 +1707,7 @@ public:
    * @endcode
    */
   template <typename WaitHandler>
-  ASIO_INITFN_RESULT_TYPE(WaitHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(WaitHandler,
       void (asio::error_code))
   async_wait(wait_type w,
       WaitHandler&& handler)

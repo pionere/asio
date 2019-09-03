@@ -368,7 +368,7 @@ public:
    * asio::io_context::post().
    */
   template <typename SignalHandler>
-  ASIO_INITFN_RESULT_TYPE(SignalHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(SignalHandler,
       void (asio::error_code, int))
   async_wait(SignalHandler&& handler)
   {

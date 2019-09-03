@@ -525,7 +525,7 @@ public:
    * throws an exception.
    */
   template <typename LegacyCompletionHandler>
-  ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+  ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
   dispatch(LegacyCompletionHandler&& handler);
 
   /// (Deprecated: Use asio::post().) Request the io_context to invoke
@@ -552,7 +552,7 @@ public:
    * throws an exception.
    */
   template <typename LegacyCompletionHandler>
-  ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+  ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
   post(LegacyCompletionHandler&& handler);
 
   /// (Deprecated: Use asio::bind_executor().) Create a new handler that

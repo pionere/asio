@@ -438,7 +438,7 @@ public:
    * ); @endcode
    */
   template <typename HandshakeHandler>
-  ASIO_INITFN_RESULT_TYPE(HandshakeHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(HandshakeHandler,
       void (asio::error_code))
   async_handshake(handshake_type type,
       HandshakeHandler&& handler)
@@ -479,7 +479,7 @@ public:
    * ); @endcode
    */
   template <typename ConstBufferSequence, typename BufferedHandshakeHandler>
-  ASIO_INITFN_RESULT_TYPE(BufferedHandshakeHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(BufferedHandshakeHandler,
       void (asio::error_code, std::size_t))
   async_handshake(handshake_type type, const ConstBufferSequence& buffers,
       BufferedHandshakeHandler&& handler)
@@ -540,7 +540,7 @@ public:
    * ); @endcode
    */
   template <typename ShutdownHandler>
-  ASIO_INITFN_RESULT_TYPE(ShutdownHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ShutdownHandler,
       void (asio::error_code))
   async_shutdown(ShutdownHandler&& handler)
   {
@@ -631,7 +631,7 @@ public:
    * completes.
    */
   template <typename ConstBufferSequence, typename WriteHandler>
-  ASIO_INITFN_RESULT_TYPE(WriteHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
       void (asio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       WriteHandler&& handler)
@@ -724,7 +724,7 @@ public:
    * operation completes.
    */
   template <typename MutableBufferSequence, typename ReadHandler>
-  ASIO_INITFN_RESULT_TYPE(ReadHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
       void (asio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ReadHandler&& handler)

@@ -1102,7 +1102,7 @@ public:
    * @endcode
    */
   template <typename WaitHandler>
-  ASIO_INITFN_RESULT_TYPE(WaitHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(WaitHandler,
       void (asio::error_code))
   async_wait(wait_type w, WaitHandler&& handler)
   {
@@ -1242,7 +1242,7 @@ public:
    */
 #if defined(ASIO_ENABLE_OLD_SERVICES)
   template <typename Protocol1, typename SocketService, typename AcceptHandler>
-  ASIO_INITFN_RESULT_TYPE(AcceptHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(AcceptHandler,
       void (asio::error_code))
   async_accept(basic_socket<Protocol1, SocketService>& peer,
       AcceptHandler&& handler,
@@ -1384,7 +1384,7 @@ public:
    */
 #if defined(ASIO_ENABLE_OLD_SERVICES)
   template <typename SocketService, typename AcceptHandler>
-  ASIO_INITFN_RESULT_TYPE(AcceptHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(AcceptHandler,
       void (asio::error_code))
   async_accept(basic_socket<protocol_type, SocketService>& peer,
       endpoint_type& peer_endpoint, AcceptHandler&& handler)
@@ -1515,7 +1515,7 @@ public:
    * @endcode
    */
   template <typename MoveAcceptHandler>
-  ASIO_INITFN_RESULT_TYPE(MoveAcceptHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
       void (asio::error_code, typename Protocol::socket))
   async_accept(MoveAcceptHandler&& handler)
   {
@@ -1653,7 +1653,7 @@ public:
    * @endcode
    */
   template <typename MoveAcceptHandler>
-  ASIO_INITFN_RESULT_TYPE(MoveAcceptHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
       void (asio::error_code, typename Protocol::socket))
   async_accept(asio::io_context& io_context,
       MoveAcceptHandler&& handler)
@@ -1798,7 +1798,7 @@ public:
    * @endcode
    */
   template <typename MoveAcceptHandler>
-  ASIO_INITFN_RESULT_TYPE(MoveAcceptHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
       void (asio::error_code, typename Protocol::socket))
   async_accept(endpoint_type& peer_endpoint,
       MoveAcceptHandler&& handler)
@@ -1956,7 +1956,7 @@ public:
    * @endcode
    */
   template <typename MoveAcceptHandler>
-  ASIO_INITFN_RESULT_TYPE(MoveAcceptHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(MoveAcceptHandler,
       void (asio::error_code, typename Protocol::socket))
   async_accept(asio::io_context& io_context,
       endpoint_type& peer_endpoint,

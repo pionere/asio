@@ -396,7 +396,7 @@ struct associated_executor<
 
 template <typename AsyncWriteStream, typename ConstBufferSequence,
   typename CompletionCondition, typename WriteHandler>
-inline ASIO_INITFN_RESULT_TYPE(WriteHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition, WriteHandler&& handler,
@@ -420,7 +420,7 @@ async_write(AsyncWriteStream& s, const ConstBufferSequence& buffers,
 
 template <typename AsyncWriteStream, typename ConstBufferSequence,
     typename WriteHandler>
-inline ASIO_INITFN_RESULT_TYPE(WriteHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 async_write(AsyncWriteStream& s,
     const ConstBufferSequence& buffers, WriteHandler&& handler,
@@ -597,7 +597,7 @@ struct associated_executor<
 
 template <typename AsyncWriteStream,
     typename DynamicBuffer, typename WriteHandler>
-inline ASIO_INITFN_RESULT_TYPE(WriteHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 async_write(AsyncWriteStream& s,
     DynamicBuffer&& buffers, WriteHandler&& handler,
@@ -612,7 +612,7 @@ async_write(AsyncWriteStream& s,
 
 template <typename AsyncWriteStream, typename DynamicBuffer,
     typename CompletionCondition, typename WriteHandler>
-inline ASIO_INITFN_RESULT_TYPE(WriteHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 async_write(AsyncWriteStream& s, DynamicBuffer&& buffers,
     CompletionCondition completion_condition, WriteHandler&& handler,
@@ -642,7 +642,7 @@ async_write(AsyncWriteStream& s, DynamicBuffer&& buffers,
 #if !defined(ASIO_NO_IOSTREAM)
 
 template <typename AsyncWriteStream, typename Allocator, typename WriteHandler>
-inline ASIO_INITFN_RESULT_TYPE(WriteHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 async_write(AsyncWriteStream& s,
     asio::basic_streambuf<Allocator>& b,
@@ -654,7 +654,7 @@ async_write(AsyncWriteStream& s,
 
 template <typename AsyncWriteStream, typename Allocator,
     typename CompletionCondition, typename WriteHandler>
-inline ASIO_INITFN_RESULT_TYPE(WriteHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
     void (asio::error_code, std::size_t))
 async_write(AsyncWriteStream& s,
     asio::basic_streambuf<Allocator>& b,

@@ -128,7 +128,7 @@ inline void io_context::reset()
 }
 
 template <typename LegacyCompletionHandler>
-ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
 io_context::dispatch(LegacyCompletionHandler&& handler)
 {
   // If you get an error on the following line it means that your handler does
@@ -164,7 +164,7 @@ io_context::dispatch(LegacyCompletionHandler&& handler)
 }
 
 template <typename LegacyCompletionHandler>
-ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
 io_context::post(LegacyCompletionHandler&& handler)
 {
   // If you get an error on the following line it means that your handler does

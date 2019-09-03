@@ -590,7 +590,7 @@ public:
    * asio::io_context::post().
    */
   template <typename WaitHandler>
-  ASIO_INITFN_RESULT_TYPE(WaitHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(WaitHandler,
       void (asio::error_code))
   async_wait(WaitHandler&& handler)
   {

@@ -212,7 +212,7 @@ public:
    * @code void handler(); @endcode
    */
   template <typename LegacyCompletionHandler>
-  ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+  ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
   dispatch(LegacyCompletionHandler&& handler)
   {
     // If you get an error on the following line it means that your handler does
@@ -267,7 +267,7 @@ public:
    * @code void handler(); @endcode
    */
   template <typename LegacyCompletionHandler>
-  ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+  ASIO_INITFN_AUTO_RESULT_TYPE(LegacyCompletionHandler, void ())
   post(LegacyCompletionHandler&& handler)
   {
     // If you get an error on the following line it means that your handler does

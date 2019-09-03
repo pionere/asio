@@ -169,7 +169,7 @@ struct associated_executor<
 
 template <typename Stream>
 template <typename ReadHandler>
-ASIO_INITFN_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 buffered_read_stream<Stream>::async_fill(ReadHandler&& handler)
 {
@@ -363,7 +363,7 @@ struct associated_executor<
 
 template <typename Stream>
 template <typename MutableBufferSequence, typename ReadHandler>
-ASIO_INITFN_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 buffered_read_stream<Stream>::async_read_some(
     const MutableBufferSequence& buffers, ReadHandler&& handler)

@@ -627,7 +627,7 @@ public:
    * the handler.
    */
   template <typename ResolveHandler>
-  ASIO_INITFN_RESULT_TYPE(ResolveHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveHandler,
       void (asio::error_code, results_type))
   async_resolve(const query& q,
       ResolveHandler&& handler)
@@ -695,7 +695,7 @@ public:
    * may use additional locations when resolving service names.
    */
   template <typename ResolveHandler>
-  ASIO_INITFN_RESULT_TYPE(ResolveHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveHandler,
       void (asio::error_code, results_type))
   async_resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service,
@@ -754,7 +754,7 @@ public:
    * may use additional locations when resolving service names.
    */
   template <typename ResolveHandler>
-  ASIO_INITFN_RESULT_TYPE(ResolveHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveHandler,
       void (asio::error_code, results_type))
   async_resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service,
@@ -830,7 +830,7 @@ public:
    * may use additional locations when resolving service names.
    */
   template <typename ResolveHandler>
-  ASIO_INITFN_RESULT_TYPE(ResolveHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveHandler,
       void (asio::error_code, results_type))
   async_resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
@@ -892,7 +892,7 @@ public:
    * may use additional locations when resolving service names.
    */
   template <typename ResolveHandler>
-  ASIO_INITFN_RESULT_TYPE(ResolveHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveHandler,
       void (asio::error_code, results_type))
   async_resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
@@ -990,7 +990,7 @@ public:
    * the handler.
    */
   template <typename ResolveHandler>
-  ASIO_INITFN_RESULT_TYPE(ResolveHandler,
+  ASIO_INITFN_AUTO_RESULT_TYPE(ResolveHandler,
       void (asio::error_code, results_type))
   async_resolve(const endpoint_type& e,
       ResolveHandler&& handler)

@@ -25,7 +25,7 @@
 namespace asio {
 
 template <typename CompletionToken>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) dispatch(
     CompletionToken&& token)
 {
   typedef ASIO_HANDLER_TYPE(CompletionToken, void()) handler;
@@ -44,7 +44,7 @@ ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
 }
 
 template <typename Executor, typename CompletionToken>
-ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
+ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) dispatch(
     const Executor& ex, CompletionToken&& token,
     typename enable_if<is_executor<Executor>::value>::type*)
 {
@@ -62,7 +62,7 @@ ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
 }
 
 template <typename ExecutionContext, typename CompletionToken>
-inline ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
+inline ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void()) dispatch(
     ExecutionContext& ctx, CompletionToken&& token,
     typename enable_if<is_convertible<
       ExecutionContext&, execution_context&>::value>::type*)

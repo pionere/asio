@@ -644,7 +644,7 @@ struct associated_executor<
 
 template <typename AsyncReadStream,
     typename DynamicBuffer, typename ReadHandler>
-ASIO_INITFN_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s,
     DynamicBuffer&& buffers, char delim, ReadHandler&& handler)
@@ -896,7 +896,7 @@ struct associated_executor<
 
 template <typename AsyncReadStream,
     typename DynamicBuffer, typename ReadHandler>
-ASIO_INITFN_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s, DynamicBuffer&& buffers,
     ASIO_STRING_VIEW_PARAM delim, ReadHandler&& handler)
@@ -1155,7 +1155,7 @@ struct associated_executor<
 
 template <typename AsyncReadStream,
     typename DynamicBuffer, typename ReadHandler>
-ASIO_INITFN_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s, DynamicBuffer&& buffers,
     const boost::regex& expr, ReadHandler&& handler)
@@ -1410,7 +1410,7 @@ struct associated_executor<
 
 template <typename AsyncReadStream, typename DynamicBuffer,
     typename MatchCondition, typename ReadHandler>
-ASIO_INITFN_RESULT_TYPE(ReadHandler,
+ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s,
     DynamicBuffer&& buffers,
@@ -1438,7 +1438,7 @@ async_read_until(AsyncReadStream& s,
 #if !defined(ASIO_NO_IOSTREAM)
 
 template <typename AsyncReadStream, typename Allocator, typename ReadHandler>
-inline ASIO_INITFN_RESULT_TYPE(ReadHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s,
     asio::basic_streambuf<Allocator>& b,
@@ -1449,7 +1449,7 @@ async_read_until(AsyncReadStream& s,
 }
 
 template <typename AsyncReadStream, typename Allocator, typename ReadHandler>
-inline ASIO_INITFN_RESULT_TYPE(ReadHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s,
     asio::basic_streambuf<Allocator>& b,
@@ -1463,7 +1463,7 @@ async_read_until(AsyncReadStream& s,
 #if defined(ASIO_HAS_BOOST_REGEX)
 
 template <typename AsyncReadStream, typename Allocator, typename ReadHandler>
-inline ASIO_INITFN_RESULT_TYPE(ReadHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s,
     asio::basic_streambuf<Allocator>& b, const boost::regex& expr,
@@ -1477,7 +1477,7 @@ async_read_until(AsyncReadStream& s,
 
 template <typename AsyncReadStream, typename Allocator,
     typename MatchCondition, typename ReadHandler>
-inline ASIO_INITFN_RESULT_TYPE(ReadHandler,
+inline ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
     void (asio::error_code, std::size_t))
 async_read_until(AsyncReadStream& s,
     asio::basic_streambuf<Allocator>& b,

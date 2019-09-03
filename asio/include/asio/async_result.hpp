@@ -200,4 +200,26 @@ struct async_result_helper
     typename ::asio::decay<ct>::type, sig>::completion_handler_type
 #endif
 
+#if defined(GENERATION_DOCUMENTATION)
+# define ASIO_INITFN_AUTO_RESULT_TYPE(ct, sig) \
+  auto
+#elif defined(ASIO_HAS_RETURN_TYPE_DEDUCTION)
+# define ASIO_INITFN_AUTO_RESULT_TYPE(ct, sig) \
+  auto
+#else
+# define ASIO_INITFN_AUTO_RESULT_TYPE(ct, sig) \
+  ASIO_INITFN_RESULT_TYPE(ct, sig)
+#endif
+
+#if defined(GENERATION_DOCUMENTATION)
+# define ASIO_INITFN_DEDUCED_RESULT_TYPE(ct, sig, expr) \
+  void_or_deduced
+#elif defined(ASIO_HAS_DECLTYPE)
+# define ASIO_INITFN_DEDUCED_RESULT_TYPE(ct, sig, expr) \
+  decltype expr
+#else
+# define ASIO_INITFN_DEDUCED_RESULT_TYPE(ct, sig, expr) \
+  ASIO_INITFN_RESULT_TYPE(ct, sig)
+#endif
+
 #endif // ASIO_ASYNC_RESULT_HPP

@@ -149,7 +149,7 @@ public:
    * @note Following the move, the moved-from object is in the same state as if
    * constructed using the @c basic_seq_packet_socket(io_context&) constructor.
    */
-  basic_seq_packet_socket(basic_seq_packet_socket&& other)
+  basic_seq_packet_socket(basic_seq_packet_socket&& other) noexcept
     : basic_socket<Protocol ASIO_SVC_TARG>(std::move(other))
   {
   }

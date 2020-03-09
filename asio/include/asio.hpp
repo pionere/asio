@@ -56,6 +56,7 @@
 #include "asio/execution/blocking.hpp"
 #include "asio/execution/executor.hpp"
 #include "asio/execution/invocable_archetype.hpp"
+#include "asio/execution/outstanding_work.hpp"
 #include "asio/execution_context.hpp"
 #include "asio/executor.hpp"
 #include "asio/executor_work_guard.hpp"

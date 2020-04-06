@@ -48,8 +48,7 @@ public:
   {
     for (int i = 0; i < max_mem_index; ++i)
     {
-      if (reusable_memory_[i])
-        ::operator delete(reusable_memory_[i]);
+      ::operator delete(reusable_memory_[i]);
     }
   }
 

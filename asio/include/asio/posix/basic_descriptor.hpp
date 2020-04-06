@@ -99,7 +99,7 @@ public:
    * @note Following the move, the moved-from object is in the same state as if
    * constructed using the @c basic_descriptor(io_context&) constructor.
    */
-  basic_descriptor(basic_descriptor&& other)
+  basic_descriptor(basic_descriptor&& other) noexcept
     : basic_io_object<DescriptorService>(
         static_cast<basic_descriptor&&>(other))
   {

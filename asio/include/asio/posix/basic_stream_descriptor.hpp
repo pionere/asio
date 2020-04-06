@@ -99,7 +99,7 @@ public:
    * @note Following the move, the moved-from object is in the same state as if
    * constructed using the @c basic_stream_descriptor(io_context&) constructor.
    */
-  basic_stream_descriptor(basic_stream_descriptor&& other)
+  basic_stream_descriptor(basic_stream_descriptor&& other) noexcept
     : basic_descriptor<StreamDescriptorService>(
         static_cast<basic_stream_descriptor&&>(other))
   {

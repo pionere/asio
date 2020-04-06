@@ -43,6 +43,9 @@ public:
   /// Constructor.
   ASIO_DECL explicit context(method m);
 
+  /// Construct to take ownership of a native handle.
+  ASIO_DECL explicit context(native_handle_type native_handle);
+
   /// Move-construct a context from another.
   /**
    * This constructor moves an SSL context from one object to another.

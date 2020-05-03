@@ -50,6 +50,38 @@ struct stream_core
     pending_write_.expires_at(neg_infin());
   }
 
+  stream_core(stream_core&& other)
+    : engine_(static_cast<engine&&>(other.engine_)),
+#if defined(ASIO_HAS_BOOST_DATE_TIME)
+      pending_read_(
+         static_cast<asio::deadline_timer&&>(
+           other.pending_read_)),
+      pending_write_(
+         static_cast<asio::deadline_timer&&>(
+           other.pending_write_)),
+#else // defined(ASIO_HAS_BOOST_DATE_TIME)
+      pending_read_(
+         static_cast<asio::steady_timer&&>(
+           other.pending_read_)),
+      pending_write_(
+         static_cast<asio::steady_timer&&>(
+           other.pending_write_)),
+#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
+      output_buffer_space_(
+          static_cast<std::vector<unsigned char>&&>(
+            other.output_buffer_space_)),
+      output_buffer_(other.output_buffer_),
+      input_buffer_space_(
+          static_cast<std::vector<unsigned char>&&>(
+            other.input_buffer_space_)),
+      input_buffer_(other.input_buffer_),
+      input_(other.input_)
+  {
+    other.output_buffer_ = asio::mutable_buffer(0, 0);
+    other.input_buffer_ = asio::mutable_buffer(0, 0);
+    other.input_ = asio::const_buffer(0, 0);
+  }
+
   ~stream_core()
   {
   }
@@ -113,13 +145,13 @@ struct stream_core
   std::vector<unsigned char> output_buffer_space_;
 
   // A buffer that may be used to prepare output intended for the transport.
-  const asio::mutable_buffer output_buffer_;
+  asio::mutable_buffer output_buffer_;
 
   // Buffer space used to read input intended for the engine.
   std::vector<unsigned char> input_buffer_space_;
 
   // A buffer that may be used to read input intended for the engine.
-  const asio::mutable_buffer input_buffer_;
+  asio::mutable_buffer input_buffer_;
 
   // The buffer pointing to the engine's unconsumed input.
   asio::const_buffer input_;

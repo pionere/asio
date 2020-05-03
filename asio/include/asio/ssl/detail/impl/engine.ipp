@@ -55,16 +55,27 @@ engine::engine(SSL_CTX* context)
   ::SSL_set_bio(ssl_, int_bio, int_bio);
 }
 
+engine::engine(engine&& other) noexcept
+  : ssl_(other.ssl_),
+    ext_bio_(other.ext_bio_)
+{
+  other.ssl_ = 0;
+  other.ext_bio_ = 0;
+}
+
 engine::~engine()
 {
-  if (SSL_get_app_data(ssl_))
+  if (ssl_ && SSL_get_app_data(ssl_))
   {
     delete static_cast<verify_callback_base*>(SSL_get_app_data(ssl_));
     SSL_set_app_data(ssl_, 0);
   }
 
-  ::BIO_free(ext_bio_);
-  ::SSL_free(ssl_);
+  if (ext_bio_)
+    ::BIO_free(ext_bio_);
+
+  if (ssl_)
+    ::SSL_free(ssl_);
 }
 
 SSL* engine::native_handle()

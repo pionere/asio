@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/atomic_count.hpp"
-#include "asio/detail/executor_function.hpp"
 #include "asio/detail/global.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/recycling_allocator.hpp"
@@ -29,47 +28,6 @@
 namespace asio {
 
 #if !defined(GENERATING_DOCUMENTATION)
-
-// Lightweight, move-only function object wrapper.
-class executor::function
-{
-public:
-  template <typename F, typename Alloc>
-  explicit function(F f, const Alloc& a)
-  {
-    // Allocate and construct an operation to wrap the function.
-    typedef detail::executor_function<F, Alloc> func_type;
-    typename func_type::ptr p = {
-      detail::addressof(a), func_type::ptr::allocate(a), 0 };
-    func_ = new (p.v) func_type(static_cast<F&&>(f), a);
-    p.v = 0;
-  }
-
-  function(function&& other) noexcept
-    : func_(other.func_)
-  {
-    other.func_ = 0;
-  }
-
-  ~function()
-  {
-    if (func_)
-      func_->destroy();
-  }
-
-  void operator()()
-  {
-    if (func_)
-    {
-      detail::executor_function_base* func = func_;
-      func_ = 0;
-      func->complete();
-    }
-  }
-
-private:
-  detail::executor_function_base* func_;
-};
 
 // Default polymorphic executor implementation.
 template <typename Executor, typename Allocator>

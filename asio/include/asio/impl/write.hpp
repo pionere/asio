@@ -27,6 +27,7 @@
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
+#include "asio/detail/handler_tracking.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/throw_error.hpp"
 
@@ -259,6 +260,7 @@ namespace detail
         do
         {
           {
+            ASIO_HANDLER_LOCATION((__FILE__, __LINE__, "async_write"));
             stream_.async_write_some(buffers_.prepare(max_size),
                 static_cast<write_op&&>(*this));
           }

@@ -520,6 +520,8 @@ namespace detail
 
           // Start a new asynchronous read operation to obtain more data.
           {
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, "async_read_until"));
             stream_.async_read_some(buffers_.prepare(bytes_to_read),
                 static_cast<read_until_delim_op&&>(*this));
           }
@@ -772,6 +774,8 @@ namespace detail
 
           // Start a new asynchronous read operation to obtain more data.
           {
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, "async_read_until"));
             stream_.async_read_some(buffers_.prepare(bytes_to_read),
                 static_cast<read_until_delim_string_op&&>(*this));
           }
@@ -1031,6 +1035,8 @@ namespace detail
 
           // Start a new asynchronous read operation to obtain more data.
           {
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, "async_read_until"));
             stream_.async_read_some(buffers_.prepare(bytes_to_read),
                 static_cast<read_until_expr_op&&>(*this));
           }
@@ -1284,6 +1290,8 @@ namespace detail
 
           // Start a new asynchronous read operation to obtain more data.
           {
+            ASIO_HANDLER_LOCATION((
+                  __FILE__, __LINE__, "async_read_until"));
             stream_.async_read_some(buffers_.prepare(bytes_to_read),
                 static_cast<read_until_match_op&&>(*this));
           }

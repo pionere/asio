@@ -20,6 +20,13 @@
 #if defined(ASIO_HAS_CO_AWAIT) || defined(GENERATING_DOCUMENTATION)
 
 #include "asio/awaitable.hpp"
+#include "asio/detail/handler_tracking.hpp"
+
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+#  include "asio/detail/source_location.hpp"
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
 
 #include "asio/detail/push_options.hpp"
 
@@ -46,9 +53,86 @@ template <typename Executor = executor>
 struct use_awaitable_t
 {
   /// Default constructor.
-  constexpr use_awaitable_t()
+  constexpr use_awaitable_t(
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+      detail::source_location location = detail::source_location::current()
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+    )
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+# if defined(ASIO_HAS_SOURCE_LOCATION)
+    : file_name_(location.file_name()),
+      line_(location.line()),
+      function_name_(location.function_name())
+# else // defined(ASIO_HAS_SOURCE_LOCATION)
+    : file_name_(0),
+      line_(0),
+      function_name_(0)
+# endif // defined(ASIO_HAS_SOURCE_LOCATION)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
   {
   }
+
+  /// Constructor used to specify file name, line, and function name.
+  constexpr use_awaitable_t(const char* file_name,
+      int line, const char* function_name)
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+    : file_name_(file_name),
+      line_(line),
+      function_name_(function_name)
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
+  {
+#if !defined(ASIO_ENABLE_HANDLER_TRACKING)
+    (void)file_name;
+    (void)line;
+    (void)function_name;
+#endif // !defined(ASIO_ENABLE_HANDLER_TRACKING)
+  }
+
+  /// Adapts an executor to add the @c use_awaitable_t completion token as the
+  /// default.
+  template <typename InnerExecutor>
+  struct executor_with_default : InnerExecutor
+  {
+    /// Specify @c use_awaitable_t as the default completion token type.
+    typedef use_awaitable_t default_completion_token_type;
+
+    /// Construct the adapted executor from the inner executor type.
+    executor_with_default(const InnerExecutor& ex) ASIO_NOEXCEPT
+      : InnerExecutor(ex)
+    {
+    }
+  };
+
+  /// Type alias to adapt an I/O object to use @c use_awaitable_t as its
+  /// default completion token type.
+#if defined(ASIO_HAS_ALIAS_TEMPLATES) \
+  || defined(GENERATING_DOCUMENTATION)
+  template <typename T>
+  using as_default_on_t = typename T::template rebind_executor<
+      executor_with_default<typename T::executor_type> >::other;
+#endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
+       //   || defined(GENERATING_DOCUMENTATION)
+
+  /// Function helper to adapt an I/O object to use @c use_awaitable_t as its
+  /// default completion token type.
+  template <typename T>
+  static typename decay<T>::type::template rebind_executor<
+      executor_with_default<typename decay<T>::type::executor_type>
+    >::other
+  as_default_on(T&& object)
+  {
+    return typename decay<T>::type::template rebind_executor<
+        executor_with_default<typename decay<T>::type::executor_type>
+      >::other(ASIO_MOVE_CAST(T)(object));
+  }
+
+#if defined(ASIO_ENABLE_HANDLER_TRACKING)
+  const char* file_name_;
+  int line_;
+  const char* function_name_;
+#endif // defined(ASIO_ENABLE_HANDLER_TRACKING)
 };
 
 /// A @ref completion_token object that represents the currently executing

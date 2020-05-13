@@ -352,6 +352,7 @@ namespace detail
           if (iter != end)
           {
             socket_.close(ec);
+            ASIO_HANDLER_LOCATION((__FILE__, __LINE__, "async_connect"));
             socket_.async_connect(*iter,
                 static_cast<range_connect_op&&>(*this));
             return;
@@ -360,6 +361,7 @@ namespace detail
           if (start)
           {
             ec = asio::error::not_found;
+            ASIO_HANDLER_LOCATION((__FILE__, __LINE__, "async_connect"));
             asio::post(socket_.get_executor(),
                 detail::bind_handler(
                   static_cast<range_connect_op&&>(*this), ec));
@@ -503,6 +505,7 @@ namespace detail
           if (iter_ != end_)
           {
             socket_.close(ec);
+            ASIO_HANDLER_LOCATION((__FILE__, __LINE__, "async_connect"));
             socket_.async_connect(*iter_,
                 static_cast<iterator_connect_op&&>(*this));
             return;
@@ -511,6 +514,7 @@ namespace detail
           if (start)
           {
             ec = asio::error::not_found;
+            ASIO_HANDLER_LOCATION((__FILE__, __LINE__, "async_connect"));
             asio::post(socket_.get_executor(),
                 detail::bind_handler(
                   static_cast<iterator_connect_op&&>(*this), ec));

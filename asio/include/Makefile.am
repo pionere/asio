@@ -265,6 +265,7 @@ nobase_include_HEADERS = \
 	asio/detail/socket_select_interrupter.hpp \
 	asio/detail/socket_types.hpp \
 	asio/detail/source_location.hpp \
+	asio/detail/source_location.hpp \
 	asio/detail/static_mutex.hpp \
 	asio/detail/std_event.hpp \
 	asio/detail/std_fenced_block.hpp \

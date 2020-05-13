@@ -206,6 +206,7 @@ namespace detail
         do
         {
           {
+            ASIO_HANDLER_LOCATION((__FILE__, __LINE__, "async_write_at"));
             device_.async_write_some_at(
                 offset_ + buffers_.total_consumed(), buffers_.prepare(max_size),
                 static_cast<write_at_op&&>(*this));

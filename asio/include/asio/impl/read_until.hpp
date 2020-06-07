@@ -555,22 +555,32 @@ namespace detail
 
   template <typename AsyncReadStream,
       typename DynamicBuffer, typename ReadHandler>
-  inline void* asio_handler_allocate(std::size_t size,
+  inline asio_handler_allocate_is_deprecated
+  asio_handler_allocate(std::size_t size,
       read_until_delim_op<AsyncReadStream,
         DynamicBuffer, ReadHandler>* this_handler)
   {
+#if defined(ASIO_NO_DEPRECATED)
+    asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
+    return asio_handler_allocate_is_no_longer_used();
+#else // defined(ASIO_NO_DEPRECATED)
     return asio_handler_alloc_helpers::allocate(
         size, this_handler->handler_);
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream,
       typename DynamicBuffer, typename ReadHandler>
-  inline void asio_handler_deallocate(void* pointer, std::size_t size,
+  inline asio_handler_deallocate_is_deprecated
+  asio_handler_deallocate(void* pointer, std::size_t size,
       read_until_delim_op<AsyncReadStream,
         DynamicBuffer, ReadHandler>* this_handler)
   {
     asio_handler_alloc_helpers::deallocate(
         pointer, size, this_handler->handler_);
+#if defined(ASIO_NO_DEPRECATED)
+    return asio_handler_deallocate_is_no_longer_used();
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream,
@@ -817,22 +827,32 @@ namespace detail
 
   template <typename AsyncReadStream,
       typename DynamicBuffer, typename ReadHandler>
-  inline void* asio_handler_allocate(std::size_t size,
+  inline asio_handler_allocate_is_deprecated
+  asio_handler_allocate(std::size_t size,
       read_until_delim_string_op<AsyncReadStream,
         DynamicBuffer, ReadHandler>* this_handler)
   {
+#if defined(ASIO_NO_DEPRECATED)
+    asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
+    return asio_handler_allocate_is_no_longer_used();
+#else // defined(ASIO_NO_DEPRECATED)
     return asio_handler_alloc_helpers::allocate(
         size, this_handler->handler_);
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream,
       typename DynamicBuffer, typename ReadHandler>
-  inline void asio_handler_deallocate(void* pointer, std::size_t size,
+  inline asio_handler_deallocate_is_deprecated
+  asio_handler_deallocate(void* pointer, std::size_t size,
       read_until_delim_string_op<AsyncReadStream,
         DynamicBuffer, ReadHandler>* this_handler)
   {
     asio_handler_alloc_helpers::deallocate(
         pointer, size, this_handler->handler_);
+#if defined(ASIO_NO_DEPRECATED)
+    return asio_handler_deallocate_is_no_longer_used();
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream,
@@ -1086,22 +1106,32 @@ namespace detail
 
   template <typename AsyncReadStream, typename DynamicBuffer,
       typename RegEx, typename ReadHandler>
-  inline void* asio_handler_allocate(std::size_t size,
+  inline asio_handler_allocate_is_deprecated
+  asio_handler_allocate(std::size_t size,
       read_until_expr_op<AsyncReadStream,
         DynamicBuffer, RegEx, ReadHandler>* this_handler)
   {
+#if defined(ASIO_NO_DEPRECATED)
+    asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
+    return asio_handler_allocate_is_no_longer_used();
+#else // defined(ASIO_NO_DEPRECATED)
     return asio_handler_alloc_helpers::allocate(
         size, this_handler->handler_);
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream, typename DynamicBuffer,
       typename RegEx, typename ReadHandler>
-  inline void asio_handler_deallocate(void* pointer, std::size_t size,
+  inline asio_handler_deallocate_is_deprecated
+  asio_handler_deallocate(void* pointer, std::size_t size,
       read_until_expr_op<AsyncReadStream,
         DynamicBuffer, RegEx, ReadHandler>* this_handler)
   {
     asio_handler_alloc_helpers::deallocate(
         pointer, size, this_handler->handler_);
+#if defined(ASIO_NO_DEPRECATED)
+    return asio_handler_deallocate_is_no_longer_used();
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream, typename DynamicBuffer,
@@ -1349,22 +1379,32 @@ namespace detail
 
   template <typename AsyncReadStream, typename DynamicBuffer,
       typename MatchCondition, typename ReadHandler>
-  inline void* asio_handler_allocate(std::size_t size,
+  inline asio_handler_allocate_is_deprecated
+  asio_handler_allocate(std::size_t size,
       read_until_match_op<AsyncReadStream, DynamicBuffer,
         MatchCondition, ReadHandler>* this_handler)
   {
+#if defined(ASIO_NO_DEPRECATED)
+    asio_handler_alloc_helpers::allocate(size, this_handler->handler_);
+    return asio_handler_allocate_is_no_longer_used();
+#else // defined(ASIO_NO_DEPRECATED)
     return asio_handler_alloc_helpers::allocate(
         size, this_handler->handler_);
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream, typename DynamicBuffer,
       typename MatchCondition, typename ReadHandler>
-  inline void asio_handler_deallocate(void* pointer, std::size_t size,
+  inline asio_handler_deallocate_is_deprecated
+  asio_handler_deallocate(void* pointer, std::size_t size,
       read_until_match_op<AsyncReadStream, DynamicBuffer,
         MatchCondition, ReadHandler>* this_handler)
   {
     asio_handler_alloc_helpers::deallocate(
         pointer, size, this_handler->handler_);
+#if defined(ASIO_NO_DEPRECATED)
+    return asio_handler_deallocate_is_no_longer_used();
+#endif // defined(ASIO_NO_DEPRECATED)
   }
 
   template <typename AsyncReadStream, typename DynamicBuffer,

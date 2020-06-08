@@ -21,7 +21,6 @@
 #include <typeinfo>
 #include "asio/async_result.hpp"
 #include "asio/detail/chrono.hpp"
-#include "asio/detail/noncopyable.hpp"
 #include "asio/detail/wrapped_handler.hpp"
 #include "asio/error_code.hpp"
 #include "asio/execution_context.hpp"
@@ -587,6 +586,9 @@ public:
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 private:
+  io_context(const io_context&) = delete;
+  io_context& operator=(const io_context&) = delete;
+
   // Helper function to add the implementation.
   ASIO_DECL impl_type& add_impl(impl_type* impl);
 

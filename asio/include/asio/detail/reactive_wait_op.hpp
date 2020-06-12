@@ -33,8 +33,9 @@ class reactive_wait_op : public reactor_op
 public:
   ASIO_DEFINE_HANDLER_PTR(reactive_wait_op);
 
-  reactive_wait_op(Handler& handler)
-    : reactor_op(&reactive_wait_op::do_perform,
+  reactive_wait_op(const asio::error_code& success_ec,
+      Handler& handler)
+    : reactor_op(success_ec, &reactive_wait_op::do_perform,
         &reactive_wait_op::do_complete),
       handler_(static_cast<Handler&&>(handler))
   {

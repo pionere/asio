@@ -204,7 +204,7 @@ public:
     typedef reactive_wait_op<Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(handler);
+    p.p = new (p.v) op(success_ec_, handler);
 
     ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_wait"));
@@ -267,7 +267,7 @@ public:
     typedef descriptor_write_op<ConstBufferSequence, Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(impl.descriptor_, buffers, handler);
+    p.p = new (p.v) op(success_ec_, impl.descriptor_, buffers, handler);
 
     ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_write_some"));
@@ -290,7 +290,7 @@ public:
     typedef reactive_null_buffers_op<Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(handler);
+    p.p = new (p.v) op(success_ec_, handler);
 
     ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_write_some(null_buffers)"));
@@ -335,7 +335,7 @@ public:
     typedef descriptor_read_op<MutableBufferSequence, Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(impl.descriptor_, buffers, handler);
+    p.p = new (p.v) op(success_ec_, impl.descriptor_, buffers, handler);
 
     ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_read_some"));
@@ -358,7 +358,7 @@ public:
     typedef reactive_null_buffers_op<Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(handler);
+    p.p = new (p.v) op(success_ec_, handler);
 
     ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_read_some(null_buffers)"));
@@ -375,6 +375,9 @@ private:
 
   // The selector that performs event demultiplexing for the service.
   reactor& reactor_;
+
+  // Cached success value to avoid accessing category singleton.
+  const asio::error_code success_ec_;
 };
 
 } // namespace detail

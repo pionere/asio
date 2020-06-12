@@ -32,11 +32,11 @@ template <typename MutableBufferSequence>
 class reactive_socket_recv_op_base : public reactor_op
 {
 public:
-  reactive_socket_recv_op_base(
+  reactive_socket_recv_op_base(const asio::error_code& success_ec,
       socket_type socket, socket_ops::state_type state,
       const MutableBufferSequence& buffers,
       socket_base::message_flags flags, func_type complete_func)
-    : reactor_op(
+    : reactor_op(success_ec,
         &reactive_socket_recv_op_base::do_perform, complete_func),
       socket_(socket),
       state_(state),
@@ -96,11 +96,11 @@ class reactive_socket_recv_op :
 public:
   ASIO_DEFINE_HANDLER_PTR(reactive_socket_recv_op);
 
-  reactive_socket_recv_op(
+  reactive_socket_recv_op(const asio::error_code& success_ec,
       socket_type socket, socket_ops::state_type state,
       const MutableBufferSequence& buffers, socket_base::message_flags flags,
       Handler& handler)
-    : reactive_socket_recv_op_base<MutableBufferSequence>(socket,
+    : reactive_socket_recv_op_base<MutableBufferSequence>(success_ec, socket,
         state, buffers, flags, &reactive_socket_recv_op::do_complete),
       handler_(static_cast<Handler&&>(handler))
   {

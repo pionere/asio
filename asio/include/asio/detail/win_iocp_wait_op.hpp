@@ -42,7 +42,7 @@ public:
 
   win_iocp_wait_op(socket_ops::weak_cancel_token_type cancel_token,
       Handler& handler)
-    : reactor_op(
+    : reactor_op(asio::error_code(),
         &win_iocp_wait_op::do_perform,
         &win_iocp_wait_op::do_complete),
       cancel_token_(cancel_token),

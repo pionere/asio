@@ -32,11 +32,11 @@ template <typename ConstBufferSequence, typename Endpoint>
 class reactive_socket_sendto_op_base : public reactor_op
 {
 public:
-  reactive_socket_sendto_op_base(
+  reactive_socket_sendto_op_base(const asio::error_code& success_ec,
       socket_type socket, const ConstBufferSequence& buffers,
       const Endpoint& endpoint, socket_base::message_flags flags,
       func_type complete_func)
-    : reactor_op(
+    : reactor_op(success_ec,
         &reactive_socket_sendto_op_base::do_perform, complete_func),
       socket_(socket),
       buffers_(buffers),
@@ -78,12 +78,12 @@ class reactive_socket_sendto_op :
 public:
   ASIO_DEFINE_HANDLER_PTR(reactive_socket_sendto_op);
 
-  reactive_socket_sendto_op(
+  reactive_socket_sendto_op(const asio::error_code& success_ec,
       socket_type socket, const ConstBufferSequence& buffers,
       const Endpoint& endpoint, socket_base::message_flags flags,
       Handler& handler)
     : reactive_socket_sendto_op_base<ConstBufferSequence, Endpoint>(
-        socket, buffers, endpoint, flags,
+        success_ec, socket, buffers, endpoint, flags,
         &reactive_socket_sendto_op::do_complete),
       handler_(static_cast<Handler&&>(handler))
   {

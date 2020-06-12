@@ -36,10 +36,10 @@ template <typename MutableBufferSequence>
 class descriptor_read_op_base : public reactor_op
 {
 public:
-  descriptor_read_op_base(
+  descriptor_read_op_base(const asio::error_code& success_ec,
       int descriptor, const MutableBufferSequence& buffers,
       func_type complete_func)
-    : reactor_op(
+    : reactor_op(success_ec,
         &descriptor_read_op_base::do_perform, complete_func),
       descriptor_(descriptor),
       buffers_(buffers)
@@ -75,10 +75,10 @@ class descriptor_read_op
 public:
   ASIO_DEFINE_HANDLER_PTR(descriptor_read_op);
 
-  descriptor_read_op(
+  descriptor_read_op(const asio::error_code& success_ec,
       int descriptor, const MutableBufferSequence& buffers,
       Handler& handler)
-    : descriptor_read_op_base<MutableBufferSequence>(
+    : descriptor_read_op_base<MutableBufferSequence>(success_ec,
         descriptor, buffers, &descriptor_read_op::do_complete),
       handler_(static_cast<Handler&&>(handler))
   {

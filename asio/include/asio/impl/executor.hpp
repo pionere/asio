@@ -70,7 +70,7 @@ private:
   detail::scheduler_operation* op_;
 };
 
-// Default polymorphic allocator implementation.
+// Default polymorphic executor implementation.
 template <typename Executor, typename Allocator>
 class executor::impl
   : public executor::impl_base
@@ -194,7 +194,7 @@ private:
   };
 };
 
-// Polymorphic allocator specialisation for system_executor.
+// Polymorphic executor specialisation for system_executor.
 template <typename Allocator>
 class executor::impl<system_executor, Allocator>
   : public executor::impl_base
@@ -238,19 +238,19 @@ public:
   void dispatch(function&& f)
   {
     executor_.dispatch(static_cast<function&&>(f),
-        allocator_);
+        std::allocator<void>());
   }
 
   void post(function&& f)
   {
     executor_.post(static_cast<function&&>(f),
-        allocator_);
+        std::allocator<void>());
   }
 
   void defer(function&& f)
   {
     executor_.defer(static_cast<function&&>(f),
-        allocator_);
+        std::allocator<void>());
   }
 
   type_id_result_type target_type() const noexcept
@@ -275,7 +275,6 @@ public:
 
 private:
   system_executor executor_;
-  Allocator allocator_;
 };
 
 template <typename Executor>

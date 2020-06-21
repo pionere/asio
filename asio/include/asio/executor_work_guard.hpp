@@ -17,6 +17,8 @@
 
 #include "asio/detail/config.hpp"
 
+#if !defined(ASIO_NO_TS_EXECUTORS)
+
 #include "asio/associated_executor.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/is_executor.hpp"
@@ -165,5 +167,7 @@ make_work_guard(const T& t, ExecutionContext& ctx,
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#endif // !defined(ASIO_NO_TS_EXECUTORS)
 
 #endif // ASIO_EXECUTOR_WORK_GUARD_HPP

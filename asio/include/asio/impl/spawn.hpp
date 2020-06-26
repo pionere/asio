@@ -407,6 +407,20 @@ namespace detail {
   template <typename Handler, typename Function>
   struct spawn_helper
   {
+    typedef typename associated_allocator<Handler>::type allocator_type;
+
+    allocator_type get_allocator() const noexcept
+    {
+      return (get_associated_allocator)(data_->handler_);
+    }
+
+    typedef typename associated_executor<Handler>::type executor_type;
+
+    executor_type get_executor() const noexcept
+    {
+      return (get_associated_executor)(data_->handler_);
+    }
+
     void operator()()
     {
       typedef typename basic_yield_context<Handler>::callee_type callee_type;
@@ -470,12 +484,6 @@ void spawn(Handler&& handler,
   typedef typename decay<Handler>::type handler_type;
   typedef typename decay<Function>::type function_type;
 
-  typename associated_executor<handler_type>::type ex(
-      (get_associated_executor)(handler));
-
-  typename associated_allocator<handler_type>::type a(
-      (get_associated_allocator)(handler));
-
   detail::spawn_helper<handler_type, function_type> helper;
   helper.data_.reset(
       new detail::spawn_data<handler_type, function_type>(
@@ -483,7 +491,7 @@ void spawn(Handler&& handler,
         static_cast<Function&&>(function)));
   helper.attributes_ = attributes;
 
-  ex.dispatch(helper, a);
+  asio::dispatch(helper);
 }
 
 template <typename Handler, typename Function>
@@ -495,12 +503,6 @@ void spawn(basic_yield_context<Handler> ctx,
 
   Handler handler(ctx.handler_); // Explicit copy that might be moved from.
 
-  typename associated_executor<Handler>::type ex(
-      (get_associated_executor)(handler));
-
-  typename associated_allocator<Handler>::type a(
-      (get_associated_allocator)(handler));
-
   detail::spawn_helper<Handler, function_type> helper;
   helper.data_.reset(
       new detail::spawn_data<Handler, function_type>(
@@ -508,7 +510,7 @@ void spawn(basic_yield_context<Handler> ctx,
         static_cast<Function&&>(function)));
   helper.attributes_ = attributes;
 
-  ex.dispatch(helper, a);
+  asio::dispatch(helper);
 }
 
 template <typename Function, typename Executor>

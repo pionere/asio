@@ -285,6 +285,8 @@ void spawn(const strand<Executor>& ex, Function&& function,
     const boost::coroutines::attributes& attributes
       = boost::coroutines::attributes());
 
+#if !defined(ASIO_NO_TS_EXECUTORS)
+
 /// (Deprecated: Use overloads with a completion token.) Start a new stackful
 /// coroutine that executes in the context of a strand.
 /**
@@ -303,6 +305,8 @@ template <typename Function>
 void spawn(const asio::io_context::strand& s, Function&& function,
     const boost::coroutines::attributes& attributes
       = boost::coroutines::attributes());
+
+#endif // !defined(ASIO_NO_TS_EXECUTORS)
 
 /// (Deprecated: Use overloads with a completion token.) Start a new stackful
 /// coroutine that executes on a given execution context.

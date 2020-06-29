@@ -17,5 +17,6 @@ mapping
 outstanding_work
 prefer_only
 relationship
+sender
 set_done
 set_error

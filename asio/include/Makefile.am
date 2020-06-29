@@ -357,6 +357,7 @@ nobase_include_HEADERS = \
 	asio/execution/outstanding_work.hpp \
 	asio/execution/prefer_only.hpp \
 	asio/execution/relationship.hpp \
+	asio/execution/sender.hpp \
 	asio/execution/set_done.hpp \
 	asio/execution/set_error.hpp \
 	asio/executor.hpp \

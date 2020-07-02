@@ -351,8 +351,8 @@
       static const type name
 #   endif // (__GNUC__ >= 8)
 #  elif defined(ASIO_MSVC)
-#    define ASIO_STATIC_CONSTEXPR_DEFAULT_INIT(type, name) \
-      static const type name
+#   define ASIO_STATIC_CONSTEXPR_DEFAULT_INIT(type, name) \
+     static const type name
 #  else // defined(ASIO_MSVC)
 #   define ASIO_STATIC_CONSTEXPR_DEFAULT_INIT(type, name) \
      static constexpr const type name{}

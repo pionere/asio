@@ -179,7 +179,7 @@ public:
   }
 
   /// Destructor.
-  ~basic_executor_type()
+  ~basic_executor_type() noexcept
   {
     if (Bits & outstanding_work_tracked)
       if (pool_)

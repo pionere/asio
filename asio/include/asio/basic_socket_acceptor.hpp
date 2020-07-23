@@ -207,7 +207,7 @@ public:
    * @note Following the move, the moved-from object is in the same state as if
    * constructed using the @c basic_socket_acceptor(io_context&) constructor.
    */
-  basic_socket_acceptor(basic_socket_acceptor&& other)
+  basic_socket_acceptor(basic_socket_acceptor&& other) noexcept
     : basic_io_object<ASIO_SVC_T>(std::move(other))
   {
   }

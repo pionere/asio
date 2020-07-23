@@ -308,7 +308,7 @@
 #  if defined(__clang__)
 #   if __has_feature(__cxx_constexpr__)
 #    define ASIO_HAS_CONSTEXPR 1
-#   endif // __has_feature(__cxx_constexr__)
+#   endif // __has_feature(__cxx_constexpr__)
 #  endif // defined(__clang__)
 #  if defined(__GNUC__)
 #   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 8)) || (__GNUC__ > 4)
@@ -535,7 +535,7 @@
 #  if defined(__clang__)
 #   if __has_feature(__cxx_return_type_deduction__)
 #    define ASIO_HAS_RETURN_TYPE_DEDUCTION 1
-#   endif // __has_feature(__cxx_alias_templates__)
+#   endif // __has_feature(__cxx_return_type_deduction__)
 #  elif (__cplusplus >= 201402)
 #   define ASIO_HAS_RETURN_TYPE_DEDUCTION 1
 #  endif // (__cplusplus >= 201402)
@@ -697,14 +697,14 @@
 # endif // !defined(ASIO_LVALUE_REF_QUAL)
 # if !defined(ASIO_RVALUE_REF_QUAL)
 #  define ASIO_RVALUE_REF_QUAL &&
-# endif // !defined(ASIO_LVALUE_REF_QUAL)
+# endif // !defined(ASIO_RVALUE_REF_QUAL)
 #else // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
 # if !defined(ASIO_LVALUE_REF_QUAL)
 #  define ASIO_LVALUE_REF_QUAL
 # endif // !defined(ASIO_LVALUE_REF_QUAL)
 # if !defined(ASIO_RVALUE_REF_QUAL)
 #  define ASIO_RVALUE_REF_QUAL
-# endif // !defined(ASIO_LVALUE_REF_QUAL)
+# endif // !defined(ASIO_RVALUE_REF_QUAL)
 #endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
 
 // Default alignment.
@@ -1093,7 +1093,7 @@
 #  if defined(__clang__)
 #   if __has_feature(__cxx_nullptr__)
 #    define ASIO_HAS_NULLPTR 1
-#   endif // __has_feature(__cxx_rvalue_references__)
+#   endif // __has_feature(__cxx_nullptr__)
 #  elif defined(__GNUC__)
 #   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
 #    if (__cplusplus >= 201103) || defined(__GXX_EXPERIMENTAL_CXX0X__)
@@ -1248,7 +1248,7 @@
 #   elif (__cplusplus >= 201103)
 #    if __has_include(<future>)
 #     define ASIO_HAS_STD_FUTURE 1
-#    endif // __has_include(<mutex>)
+#    endif // __has_include(<future>)
 #   endif // (__cplusplus >= 201103)
 #  endif // defined(__clang__)
 #  if defined(__GNUC__)
@@ -1413,7 +1413,7 @@
 #  if defined(ASIO_MSVC)
 #   if (_MSC_VER >= 1900)
 #    define ASIO_HAS_STD_NESTED_EXCEPTION 1
-#   endif // (_MSC_VER >= 1800)
+#   endif // (_MSC_VER >= 1900)
 #  endif // defined(ASIO_MSVC)
 # endif // !defined(ASIO_DISABLE_STD_NESTED_EXCEPTION)
 #endif // !defined(ASIO_HAS_STD_NESTED_EXCEPTION)

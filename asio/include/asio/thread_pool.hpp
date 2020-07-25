@@ -195,6 +195,15 @@ public:
       basic_executor_type&& other) noexcept;
 
   /// Obtain an executor with the @c blocking.possibly property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::blocking.possibly); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type<Allocator,
       ASIO_UNSPECIFIED(Bits & ~blocking_mask)>
   require(execution::blocking_t::possibly_t) const
@@ -204,6 +213,15 @@ public:
   }
 
   /// Obtain an executor with the @c blocking.always property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::blocking.always); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type<Allocator,
       ASIO_UNSPECIFIED((Bits & ~blocking_mask) | blocking_always)>
   require(execution::blocking_t::always_t) const
@@ -214,6 +232,15 @@ public:
   }
 
   /// Obtain an executor with the @c blocking.never property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::blocking.never); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type<Allocator,
       ASIO_UNSPECIFIED(Bits & ~blocking_mask)>
   require(execution::blocking_t::never_t) const
@@ -223,6 +250,15 @@ public:
   }
 
   /// Obtain an executor with the @c relationship.fork property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::relationship.fork); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type require(
       execution::relationship_t::fork_t) const
   {
@@ -231,6 +267,15 @@ public:
   }
 
   /// Obtain an executor with the @c relationship.continuation property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::relationship.continuation); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type require(
       execution::relationship_t::continuation_t) const
   {
@@ -239,6 +284,15 @@ public:
   }
 
   /// Obtain an executor with the @c outstanding_work.tracked property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::outstanding_work.tracked); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type<Allocator,
       ASIO_UNSPECIFIED(Bits | outstanding_work_tracked)>
   require(execution::outstanding_work_t::tracked_t) const
@@ -248,6 +302,15 @@ public:
   }
 
   /// Obtain an executor with the @c outstanding_work.untracked property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::outstanding_work.untracked); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type<Allocator,
       ASIO_UNSPECIFIED(Bits & ~outstanding_work_tracked)>
   require(execution::outstanding_work_t::untracked_t) const
@@ -257,6 +320,15 @@ public:
   }
 
   /// Obtain an executor with the specified @c allocator property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::allocator(my_allocator)); @endcode
+   */
   template <typename OtherAllocator>
   ASIO_CONSTEXPR basic_executor_type<OtherAllocator, Bits>
   require(execution::allocator_t<OtherAllocator> a) const
@@ -266,6 +338,15 @@ public:
   }
 
   /// Obtain an executor with the default @c allocator property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::require customisation point.
+   *
+   * For example:
+   * @code auto ex1 = my_thread_pool.executor();
+   * auto ex2 = asio::require(ex1,
+   *     asio::execution::allocator); @endcode
+   */
   ASIO_CONSTEXPR basic_executor_type<std::allocator<void>, Bits>
   require(execution::allocator_t<void>) const
   {
@@ -274,6 +355,16 @@ public:
   }
 
   /// Query the current value of the @c bulk_guarantee property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * if (asio::query(ex, asio::execution::bulk_guarantee)
+   *       == asio::execution::bulk_guarantee.parallel)
+   *   ... @endcode
+   */
   static ASIO_CONSTEXPR execution::bulk_guarantee_t query(
       execution::bulk_guarantee_t) noexcept
   {
@@ -281,6 +372,16 @@ public:
   }
 
   /// Query the current value of the @c mapping property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * if (asio::query(ex, asio::execution::mapping)
+   *       == asio::execution::mapping.thread)
+   *   ... @endcode
+   */
   static ASIO_CONSTEXPR execution::mapping_t query(
       execution::mapping_t) noexcept
   {
@@ -288,12 +389,31 @@ public:
   }
 
   /// Query the current value of the @c context property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * asio::thread_pool& pool = asio::query(
+   *     ex, asio::execution::context); @endcode
+   */
   thread_pool& query(execution::context_t) const noexcept
   {
     return *pool_;
   }
 
   /// Query the current value of the @c blocking property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * if (asio::query(ex, asio::execution::blocking)
+   *       == asio::execution::blocking.always)
+   *   ... @endcode
+   */
   ASIO_CONSTEXPR execution::blocking_t query(
       execution::blocking_t) const noexcept
   {
@@ -305,6 +425,16 @@ public:
   }
 
   /// Query the current value of the @c relationship property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * if (asio::query(ex, asio::execution::relationship)
+   *       == asio::execution::relationship.continuation)
+   *   ... @endcode
+   */
   ASIO_CONSTEXPR execution::relationship_t query(
       execution::relationship_t) const noexcept
   {
@@ -314,6 +444,16 @@ public:
   }
 
   /// Query the current value of the @c outstanding_work property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * if (asio::query(ex, asio::execution::outstanding_work)
+   *       == asio::execution::outstanding_work.tracked)
+   *   ... @endcode
+   */
   static ASIO_CONSTEXPR execution::outstanding_work_t query(
       execution::outstanding_work_t) noexcept
   {
@@ -323,6 +463,15 @@ public:
   }
 
   /// Query the current value of the @c allocator property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * auto alloc = asio::query(ex,
+   *     asio::execution::allocator); @endcode
+   */
   template <typename OtherAllocator>
   ASIO_CONSTEXPR Allocator query(
       execution::allocator_t<OtherAllocator>) const noexcept
@@ -331,6 +480,15 @@ public:
   }
 
   /// Query the current value of the @c allocator property.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * auto alloc = asio::query(ex,
+   *     asio::execution::allocator); @endcode
+   */
   ASIO_CONSTEXPR Allocator query(
       execution::allocator_t<void>) const noexcept
   {
@@ -338,6 +496,15 @@ public:
   }
 
   /// Query the occupancy (recommended number of work items) for the pool.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * asio::query customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * std::size_t occupancy = asio::query(
+   *     ex, asio::execution::occupancy); @endcode
+   */
   std::size_t query(execution::occupancy_t) const noexcept
   {
     return static_cast<std::size_t>(pool_->num_threads_);
@@ -375,6 +542,14 @@ public:
   }
 
   /// Execution function.
+  /**
+   * Do not call this function directly. It is intended for use with the
+   * execution::execute customisation point.
+   *
+   * For example:
+   * @code auto ex = my_thread_pool.executor();
+   * execution::execute(ex, my_function_object); @endcode
+   */
   template <typename Function>
   void execute(Function&& f) const
   {

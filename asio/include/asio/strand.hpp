@@ -170,6 +170,13 @@ public:
 
   /// Request the strand to invoke the given function object.
   /**
+   * Do not call this function directly. It is intended for use with the
+   * execution::execute customisation point.
+   *
+   * For example:
+   * @code asio::strand<my_executor_type> ex = ...;
+   * execution::execute(ex, my_function_object); @endcode
+   *
    * This function is used to ask the strand to execute the given function
    * object on its underlying executor. The function object will be executed
    * inside this function if the strand is not otherwise busy and if the

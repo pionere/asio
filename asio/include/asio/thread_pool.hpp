@@ -156,7 +156,7 @@ template <typename Allocator, unsigned int Bits>
 class thread_pool::basic_executor_type : detail::thread_pool_bits
 {
 public:
-  /// Copy construtor.
+  /// Copy constructor.
   basic_executor_type(
       const basic_executor_type& other) noexcept
     : pool_(other.pool_),
@@ -168,7 +168,7 @@ public:
         pool_->scheduler_.work_started();
   }
 
-  /// Move construtor.
+  /// Move constructor.
   basic_executor_type(basic_executor_type&& other) noexcept
     : pool_(other.pool_),
       allocator_(static_cast<Allocator&&>(other.allocator_)),

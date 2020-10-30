@@ -43,10 +43,10 @@ public:
   typedef asio::ip::basic_resolver_results<Protocol> results_type;
 
   resolve_query_op(socket_ops::weak_cancel_token_type cancel_token,
-      const query_type& query, io_context_impl& ioc, Handler& handler)
+      const query_type& qry, io_context_impl& ioc, Handler& handler)
     : resolve_op(&resolve_query_op::do_complete),
       cancel_token_(cancel_token),
-      query_(query),
+      query_(qry),
       io_context_impl_(ioc),
       handler_(static_cast<Handler&&>(handler)),
       addrinfo_(0)

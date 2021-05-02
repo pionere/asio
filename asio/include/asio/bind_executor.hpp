@@ -18,7 +18,7 @@
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/associated_executor.hpp"
-#include "asio/associated_allocator.hpp"
+#include "asio/associator.hpp"
 #include "asio/async_result.hpp"
 #include "asio/execution_context.hpp"
 #include "asio/is_executor.hpp"
@@ -499,15 +499,16 @@ private:
 
 #endif // !defined(ASIO_NO_DEPRECATED)
 
-template <typename T, typename Executor, typename Allocator>
-struct associated_allocator<executor_binder<T, Executor>, Allocator>
+template <template <typename, typename> class Associator,
+    typename T, typename Executor, typename DefaultCandidate>
+struct associator<Associator, executor_binder<T, Executor>, DefaultCandidate>
 {
-  typedef typename associated_allocator<T, Allocator>::type type;
+  typedef typename Associator<T, DefaultCandidate>::type type;
 
   static type get(const executor_binder<T, Executor>& b,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<T, Allocator>::get(b.get(), a);
+    return Associator<T, DefaultCandidate>::get(b.get(), c);
   }
 };
 

@@ -16,7 +16,18 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include <cstddef>
 #include <memory>
+#include <new>
+
+#if !defined(ASIO_HAS_ALIGNED_NEW) \
+  && defined(ASIO_HAS_BOOST_ALIGN) \
+  && defined(ASIO_HAS_ALIGNOF)
+# include <boost/align/aligned_alloc.hpp>
+# include "asio/detail/throw_exception.hpp"
+#endif // !defined(ASIO_HAS_ALIGNED_NEW)
+       //   && defined(ASIO_HAS_BOOST_ALIGN)
+       //   && defined(ASIO_HAS_ALIGNOF)
 
 namespace asio {
 namespace detail {
@@ -37,6 +48,39 @@ using std::allocator_arg_t;
 # define ASIO_REBIND_ALLOC(alloc, t) \
   typename std::allocator_traits<alloc>::template rebind_alloc<t>
   /**/
+
+inline void* aligned_new(std::size_t align, std::size_t size)
+{
+#if defined(ASIO_HAS_ALIGNED_NEW) && defined(ASIO_HAS_ALIGNOF)
+  return ::operator new(size, std::align_val_t(align));
+#elif defined(ASIO_HAS_BOOST_ALIGN) && defined(ASIO_HAS_ALIGNOF)
+  void* ptr = boost::alignment::aligned_alloc(align, size);
+  if (!ptr)
+  {
+    std::bad_alloc ex;
+    asio::detail::throw_exception(ex);
+  }
+  return ptr;
+#else // defined(ASIO_HAS_BOOST_ALIGN) && defined(ASIO_HAS_ALIGNOF)
+  (void)align;
+  return ::operator new(size);
+#endif // defined(ASIO_HAS_BOOST_ALIGN) && defined(ASIO_HAS_ALIGNOF)
+}
+
+inline void aligned_delete(void* ptr)
+{
+#if !defined(ASIO_HAS_ALIGNED_NEW) \
+  && defined(ASIO_HAS_BOOST_ALIGN) \
+  && defined(ASIO_HAS_ALIGNOF)
+  boost::alignment::aligned_free(ptr);
+#else // !defined(ASIO_HAS_ALIGNED_NEW)
+      //   && defined(ASIO_HAS_BOOST_ALIGN)
+      //   && defined(ASIO_HAS_ALIGNOF)
+  ::operator delete(ptr);
+#endif // !defined(ASIO_HAS_ALIGNED_NEW)
+       //   && defined(ASIO_HAS_BOOST_ALIGN)
+       //   && defined(ASIO_HAS_ALIGNOF)
+}
 
 } // namespace asio
 

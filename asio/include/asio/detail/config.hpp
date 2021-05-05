@@ -720,6 +720,23 @@
 # endif // !defined(ASIO_RVALUE_REF_QUAL)
 #endif // defined(ASIO_HAS_REF_QUALIFIED_FUNCTIONS)
 
+// Support for the alignof operator.
+#if !defined(ASIO_HAS_ALIGNOF)
+# if !defined(ASIO_DISABLE_ALIGNOF)
+#  if (__cplusplus >= 201103)
+#   define ASIO_HAS_ALIGNOF 1
+#  endif // (__cplusplus >= 201103)
+# endif // !defined(ASIO_DISABLE_ALIGNOF)
+#endif // !defined(ASIO_HAS_ALIGNOF)
+
+#if !defined(ASIO_ALIGNOF)
+# if defined(ASIO_HAS_ALIGNOF)
+#  define ASIO_ALIGNOF(T) alignof(T)
+# else // defined(ASIO_HAS_ALIGNOF)
+#  define ASIO_ALIGNOF(T) 1
+# endif // defined(ASIO_HAS_ALIGNOF)
+#endif // !defined(ASIO_ALIGNOF)
+
 // Default alignment.
 #if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
 # define ASIO_DEFAULT_ALIGN __STDCPP_DEFAULT_NEW_ALIGNMENT__
@@ -732,6 +749,15 @@
 #else // defined(__GNUC__)
 # define ASIO_DEFAULT_ALIGN alignof(std::max_align_t)
 #endif // defined(__GNUC__)
+
+// Support for operator new with alignment argument.
+#if !defined(ASIO_HAS_ALIGNED_NEW)
+# if !defined(ASIO_DISABLE_ALIGNED_NEW)
+#  if (__cplusplus >= 201703)
+#   define ASIO_HAS_ALIGNED_NEW 1
+#  endif // (__cplusplus >= 201703)
+# endif // !defined(ASIO_DISABLE_ALIGNED_NEW)
+#endif // !defined(ASIO_HAS_ALIGNED_NEW)
 
 // Standard library support for aligned allocation.
 #if !defined(ASIO_HAS_STD_ALIGNED_ALLOC)

@@ -15,8 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/associated_allocator.hpp"
-#include "asio/associated_executor.hpp"
+#include "asio/associator.hpp"
 #include "asio/buffer.hpp"
 #include "asio/completion_condition.hpp"
 #include "asio/detail/array_fwd.hpp"
@@ -323,43 +322,23 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename AsyncRandomAccessWriteDevice,
-    typename ConstBufferSequence, typename ConstBufferIterator,
-    typename CompletionCondition, typename WriteHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename AsyncRandomAccessWriteDevice, typename ConstBufferSequence,
+    typename ConstBufferIterator, typename CompletionCondition,
+    typename WriteHandler, typename DefaultCandidate>
+struct associator<Associator,
     detail::write_at_op<AsyncRandomAccessWriteDevice, ConstBufferSequence,
       ConstBufferIterator, CompletionCondition, WriteHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<WriteHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<WriteHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<WriteHandler, DefaultCandidate>::type get(
       const detail::write_at_op<AsyncRandomAccessWriteDevice,
         ConstBufferSequence, ConstBufferIterator,
         CompletionCondition, WriteHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<WriteHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename AsyncRandomAccessWriteDevice,
-    typename ConstBufferSequence, typename ConstBufferIterator,
-    typename CompletionCondition, typename WriteHandler, typename Executor>
-struct associated_executor<
-    detail::write_at_op<AsyncRandomAccessWriteDevice, ConstBufferSequence,
-      ConstBufferIterator, CompletionCondition, WriteHandler>,
-    Executor>
-{
-  typedef typename associated_executor<WriteHandler, Executor>::type type;
-
-  static type get(
-      const detail::write_at_op<AsyncRandomAccessWriteDevice,
-        ConstBufferSequence, ConstBufferIterator,
-        CompletionCondition, WriteHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<WriteHandler, Executor>::get(h.handler_, ex);
+    return Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 
@@ -519,33 +498,18 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename Allocator, typename WriteHandler, typename Allocator1>
-struct associated_allocator<
-    detail::write_at_streambuf_op<Allocator, WriteHandler>,
-    Allocator1>
-{
-  typedef typename associated_allocator<WriteHandler, Allocator1>::type type;
-
-  static type get(
-      const detail::write_at_streambuf_op<Allocator, WriteHandler>& h,
-      const Allocator1& a = Allocator1()) noexcept
-  {
-    return associated_allocator<WriteHandler, Allocator1>::get(h.handler_, a);
-  }
-};
-
-template <typename Executor, typename WriteHandler, typename Executor1>
-struct associated_executor<
+template <template <typename, typename> class Associator,
+    typename Executor, typename WriteHandler, typename DefaultCandidate>
+struct associator<Associator,
     detail::write_at_streambuf_op<Executor, WriteHandler>,
-    Executor1>
+    DefaultCandidate>
+  : Associator<WriteHandler, DefaultCandidate>
 {
-  typedef typename associated_executor<WriteHandler, Executor1>::type type;
-
-  static type get(
+  static typename Associator<WriteHandler, DefaultCandidate>::type get(
       const detail::write_at_streambuf_op<Executor, WriteHandler>& h,
-      const Executor1& ex = Executor1()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_executor<WriteHandler, Executor1>::get(h.handler_, ex);
+    return Associator<WriteHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 

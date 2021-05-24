@@ -16,8 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <algorithm>
-#include "asio/associated_allocator.hpp"
-#include "asio/associated_executor.hpp"
+#include "asio/associator.hpp"
 #include "asio/buffer.hpp"
 #include "asio/completion_condition.hpp"
 #include "asio/detail/array_fwd.hpp"
@@ -388,41 +387,22 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename AsyncReadStream, typename MutableBufferSequence,
+template <template <typename, typename> class Associator,
+    typename AsyncReadStream, typename MutableBufferSequence,
     typename MutableBufferIterator, typename CompletionCondition,
-    typename ReadHandler, typename Allocator>
-struct associated_allocator<
+    typename ReadHandler, typename DefaultCandidate>
+struct associator<Associator,
     detail::read_op<AsyncReadStream, MutableBufferSequence,
       MutableBufferIterator, CompletionCondition, ReadHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
       const detail::read_op<AsyncReadStream, MutableBufferSequence,
         MutableBufferIterator, CompletionCondition, ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) ASIO_NOEXCEPT
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename AsyncReadStream, typename MutableBufferSequence,
-    typename MutableBufferIterator, typename CompletionCondition,
-    typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::read_op<AsyncReadStream, MutableBufferSequence,
-      MutableBufferIterator, CompletionCondition, ReadHandler>,
-    Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(
-      const detail::read_op<AsyncReadStream, MutableBufferSequence,
-        MutableBufferIterator, CompletionCondition, ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 
@@ -637,39 +617,22 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename CompletionCondition, typename ReadHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename AsyncReadStream, typename DynamicBuffer,
+    typename CompletionCondition, typename ReadHandler,
+    typename DefaultCandidate>
+struct associator<Associator,
     detail::read_dynbuf_op<AsyncReadStream,
       DynamicBuffer, CompletionCondition, ReadHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
       const detail::read_dynbuf_op<AsyncReadStream,
         DynamicBuffer, CompletionCondition, ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename CompletionCondition, typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::read_dynbuf_op<AsyncReadStream,
-      DynamicBuffer, CompletionCondition, ReadHandler>,
-    Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(
-      const detail::read_dynbuf_op<AsyncReadStream,
-        DynamicBuffer, CompletionCondition, ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 

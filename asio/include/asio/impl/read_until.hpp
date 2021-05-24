@@ -19,8 +19,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include "asio/associated_allocator.hpp"
-#include "asio/associated_executor.hpp"
+#include "asio/associator.hpp"
 #include "asio/buffer.hpp"
 #include "asio/buffers_iterator.hpp"
 #include "asio/detail/bind_handler.hpp"
@@ -625,39 +624,21 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename ReadHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename AsyncReadStream, typename DynamicBuffer,
+    typename ReadHandler, typename DefaultCandidate>
+struct associator<Associator,
     detail::read_until_delim_op<AsyncReadStream,
       DynamicBuffer, ReadHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
       const detail::read_until_delim_op<AsyncReadStream,
         DynamicBuffer, ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::read_until_delim_op<AsyncReadStream,
-      DynamicBuffer, ReadHandler>,
-    Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(
-      const detail::read_until_delim_op<AsyncReadStream,
-        DynamicBuffer, ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 
@@ -897,39 +878,21 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename ReadHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename AsyncReadStream, typename DynamicBuffer,
+    typename ReadHandler, typename DefaultCandidate>
+struct associator<Associator,
     detail::read_until_delim_string_op<AsyncReadStream,
       DynamicBuffer, ReadHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
       const detail::read_until_delim_string_op<AsyncReadStream,
         DynamicBuffer, ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::read_until_delim_string_op<AsyncReadStream,
-      DynamicBuffer, ReadHandler>,
-    Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(
-      const detail::read_until_delim_string_op<AsyncReadStream,
-        DynamicBuffer, ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 
@@ -1176,39 +1139,21 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename RegEx, typename ReadHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename AsyncReadStream, typename DynamicBuffer,
+    typename RegEx, typename ReadHandler, typename DefaultCandidate>
+struct associator<Associator,
     detail::read_until_expr_op<AsyncReadStream,
       DynamicBuffer, RegEx, ReadHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
       const detail::read_until_expr_op<AsyncReadStream,
         DynamicBuffer, RegEx, ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename RegEx, typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::read_until_expr_op<AsyncReadStream,
-      DynamicBuffer, RegEx, ReadHandler>,
-    Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(
-      const detail::read_until_expr_op<AsyncReadStream,
-        DynamicBuffer, RegEx, ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 
@@ -1451,39 +1396,21 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename MatchCondition, typename ReadHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename AsyncReadStream, typename DynamicBuffer,
+    typename MatchCondition, typename ReadHandler, typename DefaultCandidate>
+struct associator<Associator,
     detail::read_until_match_op<AsyncReadStream,
       DynamicBuffer, MatchCondition, ReadHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
       const detail::read_until_match_op<AsyncReadStream,
         DynamicBuffer, MatchCondition, ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename AsyncReadStream, typename DynamicBuffer,
-    typename MatchCondition, typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::read_until_match_op<AsyncReadStream,
-      DynamicBuffer, MatchCondition, ReadHandler>,
-    Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(
-      const detail::read_until_match_op<AsyncReadStream,
-        DynamicBuffer, MatchCondition, ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 

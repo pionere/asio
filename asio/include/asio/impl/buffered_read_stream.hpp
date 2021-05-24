@@ -15,8 +15,7 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include "asio/associated_allocator.hpp"
-#include "asio/associated_executor.hpp"
+#include "asio/associator.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
@@ -157,29 +156,18 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename ReadHandler, typename Allocator>
-struct associated_allocator<
-    detail::buffered_fill_handler<ReadHandler>, Allocator>
+template <template <typename, typename> class Associator,
+    typename ReadHandler, typename DefaultCandidate>
+struct associator<Associator,
+    detail::buffered_fill_handler<ReadHandler>,
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(const detail::buffered_fill_handler<ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
+      const detail::buffered_fill_handler<ReadHandler>& h,
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::buffered_fill_handler<ReadHandler>, Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(const detail::buffered_fill_handler<ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 
@@ -361,37 +349,20 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename MutableBufferSequence,
-    typename ReadHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename MutableBufferSequence, typename ReadHandler,
+    typename DefaultCandidate>
+struct associator<Associator,
     detail::buffered_read_some_handler<MutableBufferSequence, ReadHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<ReadHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<ReadHandler, DefaultCandidate>::type get(
       const detail::buffered_read_some_handler<
         MutableBufferSequence, ReadHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename MutableBufferSequence,
-    typename ReadHandler, typename Executor>
-struct associated_executor<
-    detail::buffered_read_some_handler<MutableBufferSequence, ReadHandler>,
-    Executor>
-{
-  typedef typename associated_executor<ReadHandler, Executor>::type type;
-
-  static type get(
-      const detail::buffered_read_some_handler<
-        MutableBufferSequence, ReadHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+    return Associator<ReadHandler, DefaultCandidate>::get(h.handler_, c);
   }
 };
 

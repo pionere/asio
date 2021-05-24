@@ -16,8 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <algorithm>
-#include "asio/associated_allocator.hpp"
-#include "asio/associated_executor.hpp"
+#include "asio/associator.hpp"
 #include "asio/detail/bind_handler.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
@@ -644,88 +643,44 @@ namespace detail
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-template <typename Protocol ASIO_SVC_TPARAM,
-    typename EndpointSequence,
+template <template <typename, typename> class Associator,
+    typename Protocol ASIO_SVC_TPARAM, typename EndpointSequence,
     typename ConnectCondition, typename RangeConnectHandler,
-    typename Allocator>
-struct associated_allocator<
+    typename DefaultCandidate>
+struct associator<Associator,
     detail::range_connect_op<Protocol ASIO_SVC_TARG,
       EndpointSequence, ConnectCondition, RangeConnectHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<RangeConnectHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<
-      RangeConnectHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<RangeConnectHandler, DefaultCandidate>::type get(
       const detail::range_connect_op<Protocol ASIO_SVC_TARG,
         EndpointSequence, ConnectCondition, RangeConnectHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<RangeConnectHandler,
-        Allocator>::get(h.handler_, a);
+    return Associator<RangeConnectHandler, DefaultCandidate>::get(
+        h.handler_, c);
   }
 };
 
-template <typename Protocol ASIO_SVC_TPARAM,
-    typename EndpointSequence, typename ConnectCondition,
-    typename RangeConnectHandler, typename Executor>
-struct associated_executor<
-    detail::range_connect_op<Protocol ASIO_SVC_TARG,
-      EndpointSequence, ConnectCondition, RangeConnectHandler>,
-    Executor>
-{
-  typedef typename associated_executor<
-      RangeConnectHandler, Executor>::type type;
-
-  static type get(
-      const detail::range_connect_op<Protocol ASIO_SVC_TARG,
-        EndpointSequence, ConnectCondition, RangeConnectHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<RangeConnectHandler,
-        Executor>::get(h.handler_, ex);
-  }
-};
-
-template <typename Protocol ASIO_SVC_TPARAM,
-    typename Iterator, typename ConnectCondition,
-    typename IteratorConnectHandler, typename Allocator>
-struct associated_allocator<
+template <template <typename, typename> class Associator,
+    typename Protocol ASIO_SVC_TPARAM, typename Iterator,
+    typename ConnectCondition, typename IteratorConnectHandler,
+    typename DefaultCandidate>
+struct associator<Associator,
     detail::iterator_connect_op<Protocol ASIO_SVC_TARG, Iterator,
       ConnectCondition, IteratorConnectHandler>,
-    Allocator>
+    DefaultCandidate>
+  : Associator<IteratorConnectHandler, DefaultCandidate>
 {
-  typedef typename associated_allocator<
-      IteratorConnectHandler, Allocator>::type type;
-
-  static type get(
+  static typename Associator<IteratorConnectHandler, DefaultCandidate>::type
+  get(
       const detail::iterator_connect_op<Protocol ASIO_SVC_TARG,
         Iterator, ConnectCondition, IteratorConnectHandler>& h,
-      const Allocator& a = Allocator()) noexcept
+      const DefaultCandidate& c = DefaultCandidate()) noexcept
   {
-    return associated_allocator<IteratorConnectHandler,
-        Allocator>::get(h.handler_, a);
-  }
-};
-
-template <typename Protocol ASIO_SVC_TPARAM,
-    typename Iterator, typename ConnectCondition,
-    typename IteratorConnectHandler, typename Executor>
-struct associated_executor<
-    detail::iterator_connect_op<Protocol ASIO_SVC_TARG, Iterator,
-      ConnectCondition, IteratorConnectHandler>,
-    Executor>
-{
-  typedef typename associated_executor<
-      IteratorConnectHandler, Executor>::type type;
-
-  static type get(
-      const detail::iterator_connect_op<Protocol ASIO_SVC_TARG,
-        Iterator, ConnectCondition, IteratorConnectHandler>& h,
-      const Executor& ex = Executor()) noexcept
-  {
-    return associated_executor<IteratorConnectHandler,
-        Executor>::get(h.handler_, ex);
+    return Associator<IteratorConnectHandler, DefaultCandidate>::get(
+        h.handler_, c);
   }
 };
 

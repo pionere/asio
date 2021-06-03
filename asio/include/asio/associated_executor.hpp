@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+#include "asio/detail/functional.hpp"
 #include "asio/detail/type_traits.hpp"
 #include "asio/is_executor.hpp"
 #include "asio/system_executor.hpp"
@@ -137,6 +138,54 @@ get_associated_executor(const T& t, ExecutionContext& ctx,
 
 template <typename T, typename Executor = system_executor>
 using associated_executor_t = typename associated_executor<T, Executor>::type;
+
+namespace detail {
+
+template <typename T, typename E, typename = void>
+struct associated_executor_forwarding_base
+{
+};
+
+template <typename T, typename E>
+struct associated_executor_forwarding_base<T, E,
+    typename enable_if<
+      is_same<
+        typename associated_executor<T,
+          E>::asio_associated_executor_is_unspecialised,
+        void
+      >::value
+    >::type>
+{
+  typedef void asio_associated_executor_is_unspecialised;
+};
+
+} // namespace detail
+
+#if defined(ASIO_HAS_STD_REFERENCE_WRAPPER) \
+  || defined(GENERATING_DOCUMENTATION)
+
+/// Specialisation of associated_executor for @c std::reference_wrapper.
+template <typename T, typename Executor>
+struct associated_executor<reference_wrapper<T>, Executor>
+#if !defined(GENERATING_DOCUMENTATION)
+  : detail::associated_executor_forwarding_base<T, Executor>
+#endif // !defined(GENERATING_DOCUMENTATION)
+{
+  /// Forwards @c type to the associator specialisation for the unwrapped type
+  /// @c T.
+  typedef typename associated_executor<T, Executor>::type type;
+
+  /// Forwards the request to get the executor to the associator specialisation
+  /// for the unwrapped type @c T.
+  static type get(reference_wrapper<T> t,
+      const Executor& ex = Executor()) noexcept
+  {
+    return associated_executor<T, Executor>::get(t.get(), ex);
+  }
+};
+
+#endif // defined(ASIO_HAS_STD_REFERENCE_WRAPPER)
+       //   || defined(GENERATING_DOCUMENTATION)
 
 } // namespace asio
 

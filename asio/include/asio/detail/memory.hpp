@@ -53,6 +53,7 @@ using std::allocator_arg_t;
 inline void* aligned_new(std::size_t align, std::size_t size)
 {
 #if defined(ASIO_HAS_STD_ALIGNED_ALLOC) && defined(ASIO_HAS_ALIGNOF)
+  size = (size % align == 0) ? size : size + (align - size % align);
   void* ptr = std::aligned_alloc(align, size);
   if (!ptr)
   {

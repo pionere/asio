@@ -78,6 +78,18 @@ engine::~engine()
     ::SSL_free(ssl_);
 }
 
+engine& engine::operator=(engine&& other) noexcept
+{
+  if (this != &other)
+  {
+    ssl_ = other.ssl_;
+    ext_bio_ = other.ext_bio_;
+    other.ssl_ = 0;
+    other.ext_bio_ = 0;
+  }
+  return *this;
+}
+
 SSL* engine::native_handle()
 {
   return ssl_;

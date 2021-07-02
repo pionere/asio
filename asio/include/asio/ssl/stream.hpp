@@ -104,12 +104,29 @@ public:
    * @param other The other stream object from which the move will occur. Must
    * have no outstanding asynchronous operations associated with it. Following
    * the move, @c other has a valid but unspecified state where the only safe
-   * operation is destruction.
+   * operation is destruction, or use as the target of a move assignment.
    */
   stream(stream&& other)
     : next_layer_(static_cast<Stream&&>(other.next_layer_)),
       core_(static_cast<detail::stream_core&&>(other.core_))
   {
+  }
+
+  /// Move-assign a stream from another.
+  /**
+   * @param other The other stream object from which the move will occur. Must
+   * have no outstanding asynchronous operations associated with it. Following
+   * the move, @c other has a valid but unspecified state where the only safe
+   * operation is destruction, or use as the target of a move assignment.
+   */
+  stream& operator=(stream&& other)
+  {
+    if (this != &other)
+    {
+      next_layer_ = static_cast<Stream&&>(other.next_layer_);
+      core_ = static_cast<detail::stream_core&&>(other.core_);
+    }
+    return *this;
   }
 
   /// Destructor.

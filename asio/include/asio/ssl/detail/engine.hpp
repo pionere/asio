@@ -64,6 +64,9 @@ public:
   // Destructor.
   ASIO_DECL ~engine();
 
+  // Move assign from another engine.
+  ASIO_DECL engine& operator=(engine&& other) noexcept;
+
   // Get the underlying implementation in the native type.
   ASIO_DECL SSL* native_handle();
 

@@ -86,6 +86,41 @@ struct stream_core
   {
   }
 
+  stream_core& operator=(stream_core&& other)
+  {
+    if (this != &other)
+    {
+      engine_ = static_cast<engine&&>(other.engine_);
+#if defined(ASIO_HAS_BOOST_DATE_TIME)
+      pending_read_ =
+        static_cast<asio::deadline_timer&&>(
+          other.pending_read_);
+      pending_write_ =
+        static_cast<asio::deadline_timer&&>(
+          other.pending_write_);
+#else // defined(ASIO_HAS_BOOST_DATE_TIME)
+      pending_read_ =
+        static_cast<asio::steady_timer&&>(
+          other.pending_read_);
+      pending_write_ =
+        static_cast<asio::steady_timer&&>(
+          other.pending_write_);
+#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
+      output_buffer_space_ =
+        static_cast<std::vector<unsigned char>&&>)(
+          other.output_buffer_space_);
+      output_buffer_ = other.output_buffer_;
+      input_buffer_space_ =
+        static_cast<std::vector<unsigned char>&&>(
+          other.input_buffer_space_);
+      input_ = other.input_;
+      other.output_buffer_ = asio::mutable_buffer(0, 0);
+      other.input_buffer_ = asio::mutable_buffer(0, 0);
+      other.input_ = asio::const_buffer(0, 0);
+    }
+    return *this;
+  }
+
   // The SSL engine.
   engine engine_;
 

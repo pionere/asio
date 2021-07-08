@@ -23,6 +23,7 @@
 #include "asio/detail/thread_context.hpp"
 #include "asio/detail/thread_info_base.hpp"
 #include "asio/detail/type_traits.hpp"
+#include "asio/error.hpp"
 #include "asio/post.hpp"
 #include "asio/system_error.hpp"
 #include "asio/this_coro.hpp"

@@ -19,7 +19,8 @@
 
 #if !defined(ASIO_WINDOWS) \
   && !defined(ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+  && !defined(__CYGWIN__) \
+  && !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #include "asio/buffer.hpp"
 #include "asio/io_context.hpp"
@@ -414,5 +415,6 @@ private:
 #endif // !defined(ASIO_WINDOWS)
        //   && !defined(ASIO_WINDOWS_RUNTIME)
        //   && !defined(__CYGWIN__)
+       //   && !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #endif // ASIO_DETAIL_REACTIVE_DESCRIPTOR_SERVICE_HPP

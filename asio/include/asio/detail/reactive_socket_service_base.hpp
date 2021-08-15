@@ -18,7 +18,8 @@
 #include "asio/detail/config.hpp"
 
 #if !defined(ASIO_HAS_IOCP) \
-  && !defined(ASIO_WINDOWS_RUNTIME)
+  && !defined(ASIO_WINDOWS_RUNTIME) \
+  && !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #include "asio/buffer.hpp"
 #include "asio/error.hpp"
@@ -538,5 +539,6 @@ protected:
 
 #endif // !defined(ASIO_HAS_IOCP)
        //   && !defined(ASIO_WINDOWS_RUNTIME)
+       //   && !defined(ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #endif // ASIO_DETAIL_REACTIVE_SOCKET_SERVICE_BASE_HPP

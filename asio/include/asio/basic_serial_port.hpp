@@ -51,7 +51,15 @@ class basic_serial_port
 {
 public:
   /// The native representation of a serial port.
-  typedef typename SerialPortService::native_handle_type native_handle_type;
+#if defined(GENERATING_DOCUMENTATION)
+  typedef implementation_defined native_handle_type;
+#elif defined(ASIO_HAS_IOCP)
+  typedef detail::win_iocp_serial_port_service::native_handle_type
+    native_handle_type;
+#else
+  typedef typename SerialPortService::native_handle_type;
+    native_handle_type;
+#endif
 
   /// A basic_serial_port is always the lowest layer.
   typedef basic_serial_port<SerialPortService> lowest_layer_type;

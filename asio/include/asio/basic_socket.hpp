@@ -34,6 +34,8 @@
 # elif defined(ASIO_HAS_IOCP)
 #  include "asio/detail/win_iocp_socket_service.hpp"
 #  define ASIO_SVC_T detail::win_iocp_socket_service<Protocol>
+# elif defined(ASIO_HAS_IO_URING)
+#  include "asio/detail/io_uring_socket_service.hpp"
 # else
 #  include "asio/detail/reactive_socket_service.hpp"
 #  define ASIO_SVC_T detail::reactive_socket_service<Protocol>
@@ -65,6 +67,9 @@ public:
   /// The native representation of a socket.
 #if defined(GENERATING_DOCUMENTATION)
   typedef implementation_defined native_handle_type;
+#elif defined(ASIO_HAS_IO_URING)
+  typedef typename detail::io_uring_socket_service<
+    Protocol>::native_handle_type native_handle_type;
 #else
   typedef typename ASIO_SVC_T::native_handle_type native_handle_type;
 #endif

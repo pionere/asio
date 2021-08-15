@@ -161,7 +161,11 @@ public:
   }
 
 private:
+#if defined(ASIO_HAS_IO_URING)
+  enum { chunk_size = 8 };
+#else // defined(ASIO_HAS_IO_URING)
   enum { chunk_size = 4 };
+#endif // defined(ASIO_HAS_IO_URING)
   void* reusable_memory_[max_mem_index];
 };
 

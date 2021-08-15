@@ -48,7 +48,15 @@ class basic_descriptor
 {
 public:
   /// The native representation of a descriptor.
-  typedef typename DescriptorService::native_handle_type native_handle_type;
+#if defined(GENERATING_DOCUMENTATION)
+  typedef implementation_defined native_handle_type;
+#elif defined(ASIO_HAS_IO_URING)
+  typedef detail::io_uring_descriptor_service::native_handle_type
+    native_handle_type;
+#else // defined(ASIO_HAS_IO_URING)
+  typedef typename DescriptorService::native_handle_type
+    native_handle_type;
+#endif // defined(ASIO_HAS_IO_URING)
 
   /// A basic_descriptor is always the lowest layer.
   typedef basic_descriptor<DescriptorService> lowest_layer_type;

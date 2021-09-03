@@ -859,6 +859,20 @@ template <typename Type>
 asio::detail::service_id<Type> service_base<Type>::id;
 
 } // namespace detail
+
+#if !defined(GENERATING_DOCUMENTATION)
+
+namespace execution {
+
+template <>
+struct is_executor<io_context> : false_type
+{
+};
+
+} // namespace execution
+
+#endif // !defined(GENERATING_DOCUMENTATION)
+
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

@@ -48,6 +48,9 @@ namespace detail {
 
 class select_reactor
   : public execution_context_service_base<select_reactor>
+#if !defined(ASIO_HAS_IOCP)
+    , public scheduler_task
+#endif // !defined(ASIO_HAS_IOCP)
 {
 public:
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)

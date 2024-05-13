@@ -1439,4 +1439,18 @@
 # endif // defined(__clang__)
 #endif // !defined(ASIO_HAS_CO_AWAIT)
 
+// Compiler support for the the [[nodiscard]] attribute.
+#if !defined(ASIO_NODISCARD)
+# if defined(__has_cpp_attribute)
+#  if __has_cpp_attribute(nodiscard)
+#   if (__cplusplus >= 201703)
+#    define ASIO_NODISCARD [[nodiscard]]
+#   endif // (__cplusplus >= 201703)
+#  endif // __has_cpp_attribute(nodiscard)
+# endif // defined(__has_cpp_attribute)
+#endif // !defined(ASIO_NODISCARD)
+#if !defined(ASIO_NODISCARD)
+# define ASIO_NODISCARD
+#endif // !defined(ASIO_NODISCARD)
+
 #endif // ASIO_DETAIL_CONFIG_HPP

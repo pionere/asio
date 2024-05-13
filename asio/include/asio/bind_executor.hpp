@@ -487,7 +487,7 @@ private:
 
 /// Associate an object of type @c T with an executor of type @c Executor.
 template <typename Executor, typename T>
-ASIO_NODISCARD inline executor_binder<typename decay<T>::type, Executor>
+inline executor_binder<typename decay<T>::type, Executor>
 bind_executor(const Executor& ex, T&& t,
     typename enable_if<is_executor<Executor>::value>::type* = 0)
 {
@@ -497,7 +497,7 @@ bind_executor(const Executor& ex, T&& t,
 
 /// Associate an object of type @c T with an execution context's executor.
 template <typename ExecutionContext, typename T>
-ASIO_NODISCARD inline executor_binder<typename decay<T>::type,
+inline executor_binder<typename decay<T>::type,
     typename ExecutionContext::executor_type>
 bind_executor(ExecutionContext& ctx, T&& t,
     typename enable_if<is_convertible<

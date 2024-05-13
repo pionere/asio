@@ -99,7 +99,7 @@ struct associated_allocator
  * @returns <tt>associated_allocator<T>::get(t)</tt>
  */
 template <typename T>
-ASIO_NODISCARD inline typename associated_allocator<T>::type
+inline typename associated_allocator<T>::type
 get_associated_allocator(const T& t) noexcept
 {
   return associated_allocator<T>::get(t);
@@ -110,7 +110,7 @@ get_associated_allocator(const T& t) noexcept
  * @returns <tt>associated_allocator<T, Allocator>::get(t, a)</tt>
  */
 template <typename T, typename Allocator>
-ASIO_NODISCARD inline typename associated_allocator<T, Allocator>::type
+inline typename associated_allocator<T, Allocator>::type
 get_associated_allocator(const T& t, const Allocator& a) noexcept
 {
   return associated_allocator<T, Allocator>::get(t, a);

@@ -16,6 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
+
+#if defined(ASIO_HAS_STD_MUTEX_AND_CONDVAR)
+
 #include <chrono>
 #include <condition_variable>
 #include "asio/detail/assert.hpp"
@@ -68,18 +71,6 @@ public:
     lock.unlock();
     if (have_waiters)
       cond_.notify_one();
-  }
-
-  // Unlock the mutex and signal one waiter who may destroy us.
-  template <typename Lock>
-  void unlock_and_signal_one_for_destruction(Lock& lock)
-  {
-    ASIO_ASSERT(lock.locked());
-    state_ |= 1;
-    bool have_waiters = (state_ > 1);
-    if (have_waiters)
-      cond_.notify_one();
-    lock.unlock();
   }
 
   // If there's a waiter, unlock the mutex and signal it.
@@ -179,5 +170,7 @@ private:
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#endif // defined(ASIO_HAS_STD_MUTEX_AND_CONDVAR)
 
 #endif // ASIO_DETAIL_STD_EVENT_HPP

@@ -16,7 +16,6 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-#include <functional>
 #include <string>
 #include "asio/detail/array.hpp"
 #include "asio/detail/cstdint.hpp"
@@ -365,37 +364,6 @@ std::basic_ostream<Elem, Traits>& operator<<(
 
 } // namespace ip
 } // namespace asio
-
-namespace std {
-
-template <>
-struct hash<asio::ip::address_v6>
-{
-  std::size_t operator()(const asio::ip::address_v6& addr)
-    const noexcept
-  {
-    const asio::ip::address_v6::bytes_type bytes = addr.to_bytes();
-    std::size_t result = static_cast<std::size_t>(addr.scope_id());
-    combine_4_bytes(result, &bytes[0]);
-    combine_4_bytes(result, &bytes[4]);
-    combine_4_bytes(result, &bytes[8]);
-    combine_4_bytes(result, &bytes[12]);
-    return result;
-  }
-
-private:
-  static void combine_4_bytes(std::size_t& seed, const unsigned char* bytes)
-  {
-    const std::size_t bytes_hash =
-      (static_cast<std::size_t>(bytes[0]) << 24) |
-      (static_cast<std::size_t>(bytes[1]) << 16) |
-      (static_cast<std::size_t>(bytes[2]) << 8) |
-      (static_cast<std::size_t>(bytes[3]));
-    seed ^= bytes_hash + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-  }
-};
-
-} // namespace std
 
 #include "asio/detail/pop_options.hpp"
 

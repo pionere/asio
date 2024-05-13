@@ -32,7 +32,6 @@ using std::int64_t;
 using std::int_least64_t;
 using std::uint64_t;
 using std::uint_least64_t;
-using std::uintptr_t;
 using std::uintmax_t;
 
 } // namespace asio

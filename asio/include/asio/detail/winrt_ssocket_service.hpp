@@ -20,7 +20,7 @@
 #if defined(ASIO_WINDOWS_RUNTIME)
 
 #include "asio/error.hpp"
-#include "asio/execution_context.hpp"
+#include "asio/io_context.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/winrt_socket_connect_op.hpp"
 #include "asio/detail/winrt_ssocket_service_base.hpp"
@@ -33,7 +33,7 @@ namespace detail {
 
 template <typename Protocol>
 class winrt_ssocket_service :
-  public execution_context_service_base<winrt_ssocket_service<Protocol>>,
+  public service_base<winrt_ssocket_service<Protocol> >,
   public winrt_ssocket_service_base
 {
 public:
@@ -61,9 +61,9 @@ public:
   };
 
   // Constructor.
-  winrt_ssocket_service(execution_context& context)
-    : execution_context_service_base<winrt_ssocket_service<Protocol>>(context),
-      winrt_ssocket_service_base(context)
+  winrt_ssocket_service(asio::io_context& io_context)
+    : service_base<winrt_ssocket_service<Protocol> >(io_context),
+      winrt_ssocket_service_base(io_context)
   {
   }
 
@@ -178,14 +178,6 @@ public:
     return endpoint;
   }
 
-  // Disable sends or receives on the socket.
-  asio::error_code shutdown(implementation_type&,
-      socket_base::shutdown_type, asio::error_code& ec)
-  {
-    ec = asio::error::operation_not_supported;
-    return ec;
-  }
-
   // Set a socket option.
   template <typename Option>
   asio::error_code set_option(implementation_type& impl,
@@ -218,21 +210,21 @@ public:
   }
 
   // Start an asynchronous connect.
-  template <typename Handler, typename IoExecutor>
+  template <typename Handler>
   void async_connect(implementation_type& impl,
       const endpoint_type& peer_endpoint,
-      Handler& handler, const IoExecutor& io_ex)
+      Handler& handler)
   {
     bool is_continuation =
       asio_handler_cont_helpers::is_continuation(handler);
 
     // Allocate and construct an operation to wrap the handler.
-    typedef winrt_socket_connect_op<Handler, IoExecutor> op;
+    typedef winrt_socket_connect_op<Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
-    p.p = new (p.v) op(handler, io_ex);
+    p.p = new (p.v) op(handler);
 
-    ASIO_HANDLER_CREATION((scheduler_.context(),
+    ASIO_HANDLER_CREATION((io_context_.context(),
           *p.p, "socket", &impl, 0, "async_connect"));
 
     start_connect_op(impl, peer_endpoint.data(), p.p, is_continuation);

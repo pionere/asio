@@ -16,69 +16,17 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-#include "asio/associator.hpp"
+#include "asio/associated_allocator.hpp"
+#include "asio/associated_executor.hpp"
+#include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
+#include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/type_traits.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace detail {
-
-template <typename Handler>
-class binder0
-{
-public:
-  template <typename T>
-  binder0(int, T&& handler)
-    : handler_(static_cast<T&&>(handler))
-  {
-  }
-
-  binder0(Handler& handler)
-    : handler_(static_cast<Handler&&>(handler))
-  {
-  }
-
-  binder0(const binder0& other)
-    : handler_(other.handler_)
-  {
-  }
-
-  binder0(binder0&& other)
-    : handler_(static_cast<Handler&&>(other.handler_))
-  {
-  }
-
-  void operator()()
-  {
-    static_cast<Handler&&>(handler_)();
-  }
-
-  void operator()() const
-  {
-    handler_();
-  }
-
-//private:
-  Handler handler_;
-};
-
-template <typename Handler>
-inline bool asio_handler_is_continuation(
-    binder0<Handler>* this_handler)
-{
-  return asio_handler_cont_helpers::is_continuation(
-      this_handler->handler_);
-}
-
-template <typename Handler>
-inline binder0<decay_t<Handler>> bind_handler(
-    Handler&& handler)
-{
-  return binder0<decay_t<Handler>>(
-      0, static_cast<Handler&&>(handler));
-}
 
 template <typename Handler, typename Arg1>
 class binder1
@@ -111,7 +59,7 @@ public:
 
   void operator()()
   {
-    static_cast<Handler&&>(handler_)(
+    handler_(
         static_cast<const Arg1&>(arg1_));
   }
 
@@ -126,6 +74,22 @@ public:
 };
 
 template <typename Handler, typename Arg1>
+inline void* asio_handler_allocate(std::size_t size,
+    binder1<Handler, Arg1>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    binder1<Handler, Arg1>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1>
 inline bool asio_handler_is_continuation(
     binder1<Handler, Arg1>* this_handler)
 {
@@ -133,11 +97,27 @@ inline bool asio_handler_is_continuation(
       this_handler->handler_);
 }
 
+template <typename Function, typename Handler, typename Arg1>
+inline void asio_handler_invoke(Function& function,
+    binder1<Handler, Arg1>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
+template <typename Function, typename Handler, typename Arg1>
+inline void asio_handler_invoke(const Function& function,
+    binder1<Handler, Arg1>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
 template <typename Handler, typename Arg1>
-inline binder1<decay_t<Handler>, Arg1> bind_handler(
+inline binder1<typename decay<Handler>::type, Arg1> bind_handler(
     Handler&& handler, const Arg1& arg1)
 {
-  return binder1<decay_t<Handler>, Arg1>(0,
+  return binder1<typename decay<Handler>::type, Arg1>(0,
       static_cast<Handler&&>(handler), arg1);
 }
 
@@ -177,7 +157,7 @@ public:
 
   void operator()()
   {
-    static_cast<Handler&&>(handler_)(
+    handler_(
         static_cast<const Arg1&>(arg1_),
         static_cast<const Arg2&>(arg2_));
   }
@@ -194,6 +174,22 @@ public:
 };
 
 template <typename Handler, typename Arg1, typename Arg2>
+inline void* asio_handler_allocate(std::size_t size,
+    binder2<Handler, Arg1, Arg2>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    binder2<Handler, Arg1, Arg2>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2>
 inline bool asio_handler_is_continuation(
     binder2<Handler, Arg1, Arg2>* this_handler)
 {
@@ -201,11 +197,27 @@ inline bool asio_handler_is_continuation(
       this_handler->handler_);
 }
 
+template <typename Function, typename Handler, typename Arg1, typename Arg2>
+inline void asio_handler_invoke(Function& function,
+    binder2<Handler, Arg1, Arg2>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
+template <typename Function, typename Handler, typename Arg1, typename Arg2>
+inline void asio_handler_invoke(const Function& function,
+    binder2<Handler, Arg1, Arg2>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
 template <typename Handler, typename Arg1, typename Arg2>
-inline binder2<decay_t<Handler>, Arg1, Arg2> bind_handler(
+inline binder2<typename decay<Handler>::type, Arg1, Arg2> bind_handler(
     Handler&& handler, const Arg1& arg1, const Arg2& arg2)
 {
-  return binder2<decay_t<Handler>, Arg1, Arg2>(0,
+  return binder2<typename decay<Handler>::type, Arg1, Arg2>(0,
       static_cast<Handler&&>(handler), arg1, arg2);
 }
 
@@ -250,7 +262,7 @@ public:
 
   void operator()()
   {
-    static_cast<Handler&&>(handler_)(
+    handler_(
         static_cast<const Arg1&>(arg1_),
         static_cast<const Arg2&>(arg2_),
         static_cast<const Arg3&>(arg3_));
@@ -269,6 +281,22 @@ public:
 };
 
 template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
+inline void* asio_handler_allocate(std::size_t size,
+    binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
 inline bool asio_handler_is_continuation(
     binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
 {
@@ -276,12 +304,30 @@ inline bool asio_handler_is_continuation(
       this_handler->handler_);
 }
 
+template <typename Function, typename Handler,
+    typename Arg1, typename Arg2, typename Arg3>
+inline void asio_handler_invoke(Function& function,
+    binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
+template <typename Function, typename Handler,
+    typename Arg1, typename Arg2, typename Arg3>
+inline void asio_handler_invoke(const Function& function,
+    binder3<Handler, Arg1, Arg2, Arg3>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
 template <typename Handler, typename Arg1, typename Arg2, typename Arg3>
-inline binder3<decay_t<Handler>, Arg1, Arg2, Arg3> bind_handler(
+inline binder3<typename decay<Handler>::type, Arg1, Arg2, Arg3> bind_handler(
     Handler&& handler, const Arg1& arg1, const Arg2& arg2,
     const Arg3& arg3)
 {
-  return binder3<decay_t<Handler>, Arg1, Arg2, Arg3>(0,
+  return binder3<typename decay<Handler>::type, Arg1, Arg2, Arg3>(0,
       static_cast<Handler&&>(handler), arg1, arg2, arg3);
 }
 
@@ -331,7 +377,7 @@ public:
 
   void operator()()
   {
-    static_cast<Handler&&>(handler_)(
+    handler_(
         static_cast<const Arg1&>(arg1_),
         static_cast<const Arg2&>(arg2_),
         static_cast<const Arg3&>(arg3_),
@@ -353,6 +399,24 @@ public:
 
 template <typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4>
+inline void* asio_handler_allocate(std::size_t size,
+    binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1,
+    typename Arg2, typename Arg3, typename Arg4>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1,
+    typename Arg2, typename Arg3, typename Arg4>
 inline bool asio_handler_is_continuation(
     binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
 {
@@ -360,13 +424,31 @@ inline bool asio_handler_is_continuation(
       this_handler->handler_);
 }
 
+template <typename Function, typename Handler, typename Arg1,
+    typename Arg2, typename Arg3, typename Arg4>
+inline void asio_handler_invoke(Function& function,
+    binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
+template <typename Function, typename Handler, typename Arg1,
+    typename Arg2, typename Arg3, typename Arg4>
+inline void asio_handler_invoke(const Function& function,
+    binder4<Handler, Arg1, Arg2, Arg3, Arg4>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
 template <typename Handler, typename Arg1,
     typename Arg2, typename Arg3, typename Arg4>
-inline binder4<decay_t<Handler>, Arg1, Arg2, Arg3, Arg4>
+inline binder4<typename decay<Handler>::type, Arg1, Arg2, Arg3, Arg4>
 bind_handler(Handler&& handler, const Arg1& arg1,
     const Arg2& arg2, const Arg3& arg3, const Arg4& arg4)
 {
-  return binder4<decay_t<Handler>, Arg1, Arg2, Arg3, Arg4>(0,
+  return binder4<typename decay<Handler>::type, Arg1, Arg2, Arg3, Arg4>(0,
       static_cast<Handler&&>(handler), arg1, arg2, arg3, arg4);
 }
 
@@ -420,7 +502,7 @@ public:
 
   void operator()()
   {
-    static_cast<Handler&&>(handler_)(
+    handler_(
         static_cast<const Arg1&>(arg1_),
         static_cast<const Arg2&>(arg2_),
         static_cast<const Arg3&>(arg3_),
@@ -444,6 +526,24 @@ public:
 
 template <typename Handler, typename Arg1, typename Arg2,
     typename Arg3, typename Arg4, typename Arg5>
+inline void* asio_handler_allocate(std::size_t size,
+    binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2,
+    typename Arg3, typename Arg4, typename Arg5>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2,
+    typename Arg3, typename Arg4, typename Arg5>
 inline bool asio_handler_is_continuation(
     binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
 {
@@ -451,13 +551,31 @@ inline bool asio_handler_is_continuation(
       this_handler->handler_);
 }
 
+template <typename Function, typename Handler, typename Arg1,
+    typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+inline void asio_handler_invoke(Function& function,
+    binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
+template <typename Function, typename Handler, typename Arg1,
+    typename Arg2, typename Arg3, typename Arg4, typename Arg5>
+inline void asio_handler_invoke(const Function& function,
+    binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
 template <typename Handler, typename Arg1, typename Arg2,
     typename Arg3, typename Arg4, typename Arg5>
-inline binder5<decay_t<Handler>, Arg1, Arg2, Arg3, Arg4, Arg5>
+inline binder5<typename decay<Handler>::type, Arg1, Arg2, Arg3, Arg4, Arg5>
 bind_handler(Handler&& handler, const Arg1& arg1,
     const Arg2& arg2, const Arg3& arg3, const Arg4& arg4, const Arg5& arg5)
 {
-  return binder5<decay_t<Handler>, Arg1, Arg2, Arg3, Arg4, Arg5>(0,
+  return binder5<typename decay<Handler>::type, Arg1, Arg2, Arg3, Arg4, Arg5>(0,
       static_cast<Handler&&>(handler), arg1, arg2, arg3, arg4, arg5);
 }
 
@@ -480,7 +598,7 @@ public:
 
   void operator()()
   {
-    static_cast<Handler&&>(handler_)(
+    handler_(
         static_cast<Arg1&&>(arg1_));
   }
 
@@ -490,11 +608,35 @@ public:
 };
 
 template <typename Handler, typename Arg1>
+inline void* asio_handler_allocate(std::size_t size,
+    move_binder1<Handler, Arg1>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    move_binder1<Handler, Arg1>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1>
 inline bool asio_handler_is_continuation(
     move_binder1<Handler, Arg1>* this_handler)
 {
   return asio_handler_cont_helpers::is_continuation(
       this_handler->handler_);
+}
+
+template <typename Function, typename Handler, typename Arg1>
+inline void asio_handler_invoke(Function&& function,
+    move_binder1<Handler, Arg1>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      static_cast<Function&&>(function), this_handler->handler_);
 }
 
 template <typename Handler, typename Arg1, typename Arg2>
@@ -518,7 +660,7 @@ public:
 
   void operator()()
   {
-    static_cast<Handler&&>(handler_)(
+    handler_(
         static_cast<const Arg1&>(arg1_),
         static_cast<Arg2&&>(arg2_));
   }
@@ -530,6 +672,22 @@ public:
 };
 
 template <typename Handler, typename Arg1, typename Arg2>
+inline void* asio_handler_allocate(std::size_t size,
+    move_binder2<Handler, Arg1, Arg2>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    move_binder2<Handler, Arg1, Arg2>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Handler, typename Arg1, typename Arg2>
 inline bool asio_handler_is_continuation(
     move_binder2<Handler, Arg1, Arg2>* this_handler)
 {
@@ -537,170 +695,110 @@ inline bool asio_handler_is_continuation(
       this_handler->handler_);
 }
 
+template <typename Function, typename Handler, typename Arg1, typename Arg2>
+inline void asio_handler_invoke(Function&& function,
+    move_binder2<Handler, Arg1, Arg2>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      static_cast<Function&&>(function), this_handler->handler_);
+}
+
 } // namespace detail
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename DefaultCandidate>
-struct associator<Associator,
-    detail::binder0<Handler>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Allocator>
+struct associated_allocator<detail::binder1<Handler, Arg1>, Allocator>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::binder0<Handler>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_allocator<Handler, Allocator>::type type;
 
-  static auto get(const detail::binder0<Handler>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::binder1<Handler, Arg1>& h,
+      const Allocator& a = Allocator()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_allocator<Handler, Allocator>::get(h.handler_, a);
   }
 };
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename Arg1, typename DefaultCandidate>
-struct associator<Associator,
-    detail::binder1<Handler, Arg1>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Arg2, typename Allocator>
+struct associated_allocator<detail::binder2<Handler, Arg1, Arg2>, Allocator>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::binder1<Handler, Arg1>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_allocator<Handler, Allocator>::type type;
 
-  static auto get(const detail::binder1<Handler, Arg1>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::binder2<Handler, Arg1, Arg2>& h,
+      const Allocator& a = Allocator()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_allocator<Handler, Allocator>::get(h.handler_, a);
   }
 };
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename Arg1, typename Arg2,
-    typename DefaultCandidate>
-struct associator<Associator,
-    detail::binder2<Handler, Arg1, Arg2>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Executor>
+struct associated_executor<detail::binder1<Handler, Arg1>, Executor>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::binder2<Handler, Arg1, Arg2>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_executor<Handler, Executor>::type type;
 
-  static auto get(const detail::binder2<Handler, Arg1, Arg2>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::binder1<Handler, Arg1>& h,
+      const Executor& ex = Executor()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_executor<Handler, Executor>::get(h.handler_, ex);
   }
 };
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename Arg1, typename Arg2, typename Arg3,
-    typename DefaultCandidate>
-struct associator<Associator,
-    detail::binder3<Handler, Arg1, Arg2, Arg3>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Arg2, typename Executor>
+struct associated_executor<detail::binder2<Handler, Arg1, Arg2>, Executor>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::binder3<Handler, Arg1, Arg2, Arg3>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_executor<Handler, Executor>::type type;
 
-  static auto get(const detail::binder3<Handler, Arg1, Arg2, Arg3>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::binder2<Handler, Arg1, Arg2>& h,
+      const Executor& ex = Executor()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_executor<Handler, Executor>::get(h.handler_, ex);
   }
 };
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename Arg1, typename Arg2, typename Arg3,
-    typename Arg4, typename DefaultCandidate>
-struct associator<Associator,
-    detail::binder4<Handler, Arg1, Arg2, Arg3, Arg4>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Allocator>
+struct associated_allocator<detail::move_binder1<Handler, Arg1>, Allocator>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::binder4<Handler, Arg1, Arg2, Arg3, Arg4>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_allocator<Handler, Allocator>::type type;
 
-  static auto get(const detail::binder4<Handler, Arg1, Arg2, Arg3, Arg4>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::move_binder1<Handler, Arg1>& h,
+      const Allocator& a = Allocator()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_allocator<Handler, Allocator>::get(h.handler_, a);
   }
 };
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename Arg1, typename Arg2, typename Arg3,
-    typename Arg4, typename Arg5, typename DefaultCandidate>
-struct associator<Associator,
-    detail::binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Arg2, typename Allocator>
+struct associated_allocator<
+    detail::move_binder2<Handler, Arg1, Arg2>, Allocator>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_allocator<Handler, Allocator>::type type;
 
-  static auto get(
-      const detail::binder5<Handler, Arg1, Arg2, Arg3, Arg4, Arg5>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::move_binder2<Handler, Arg1, Arg2>& h,
+      const Allocator& a = Allocator()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_allocator<Handler, Allocator>::get(h.handler_, a);
   }
 };
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename Arg1, typename DefaultCandidate>
-struct associator<Associator,
-    detail::move_binder1<Handler, Arg1>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Executor>
+struct associated_executor<detail::move_binder1<Handler, Arg1>, Executor>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::move_binder1<Handler, Arg1>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_executor<Handler, Executor>::type type;
 
-  static auto get(const detail::move_binder1<Handler, Arg1>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::move_binder1<Handler, Arg1>& h,
+      const Executor& ex = Executor()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_executor<Handler, Executor>::get(h.handler_, ex);
   }
 };
 
-template <template <typename, typename> class Associator,
-    typename Handler, typename Arg1, typename Arg2, typename DefaultCandidate>
-struct associator<Associator,
-    detail::move_binder2<Handler, Arg1, Arg2>, DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Handler, typename Arg1, typename Arg2, typename Executor>
+struct associated_executor<detail::move_binder2<Handler, Arg1, Arg2>, Executor>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const detail::move_binder2<Handler, Arg1, Arg2>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_executor<Handler, Executor>::type type;
 
-  static auto get(const detail::move_binder2<Handler, Arg1, Arg2>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const detail::move_binder2<Handler, Arg1, Arg2>& h,
+      const Executor& ex = Executor()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_executor<Handler, Executor>::get(h.handler_, ex);
   }
 };
 

@@ -118,7 +118,7 @@ public:
   /// Obtain the true network address, omitting any host bits.
   network_v4 canonical() const noexcept
   {
-    return network_v4(network(), prefix_length());
+    return network_v4(network(), netmask());
   }
 
   /// Test if network is a valid host address.

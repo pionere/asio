@@ -24,10 +24,6 @@ namespace detail {
 using std::function;
 
 } // namespace detail
-
-using std::ref;
-using std::reference_wrapper;
-
 } // namespace asio
 
 #endif // ASIO_DETAIL_FUNCTIONAL_HPP

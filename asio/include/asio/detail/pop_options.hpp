@@ -24,14 +24,8 @@
 // Intel C++
 
 # if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  if !defined(ASIO_DISABLE_VISIBILITY)
-#   pragma GCC visibility pop
-#  endif // !defined(ASIO_DISABLE_VISIBILITY)
+#  pragma GCC visibility pop
 # endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-
-# pragma pop_macro ("emit")
-# pragma pop_macro ("signal")
-# pragma pop_macro ("slot")
 
 #elif defined(__clang__)
 
@@ -48,16 +42,8 @@
 # endif
 
 # if !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
-#  if !defined(ASIO_DISABLE_VISIBILITY)
-#   pragma GCC visibility pop
-#  endif // !defined(ASIO_DISABLE_VISIBILITY)
+#  pragma GCC visibility pop
 # endif // !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
-
-# pragma GCC diagnostic pop
-
-# pragma pop_macro ("emit")
-# pragma pop_macro ("signal")
-# pragma pop_macro ("slot")
 
 #elif defined(__GNUC__)
 
@@ -78,16 +64,12 @@
 # endif
 
 # if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  if !defined(ASIO_DISABLE_VISIBILITY)
-#   pragma GCC visibility pop
-#  endif // !defined(ASIO_DISABLE_VISIBILITY)
+#  pragma GCC visibility pop
 # endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
 
-# pragma GCC diagnostic pop
-
-# pragma pop_macro ("emit")
-# pragma pop_macro ("signal")
-# pragma pop_macro ("slot")
+# if (__GNUC__ >= 7)
+#  pragma GCC diagnostic pop
+# endif // (__GNUC__ >= 7)
 
 #elif defined(__KCC)
 
@@ -149,9 +131,5 @@
 #   undef ASIO_CLR_WORKAROUND
 #  endif
 # endif
-
-# pragma pop_macro ("emit")
-# pragma pop_macro ("signal")
-# pragma pop_macro ("slot")
 
 #endif

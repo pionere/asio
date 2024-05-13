@@ -35,30 +35,8 @@ public:
 
   std::string message(int value) const
   {
-    const char* reason = ::ERR_reason_error_string(value);
-    if (reason)
-    {
-      const char* lib = ::ERR_lib_error_string(value);
-#if (OPENSSL_VERSION_NUMBER < 0x30000000L)
-      const char* func = ::ERR_func_error_string(value);
-#else // (OPENSSL_VERSION_NUMBER < 0x30000000L)
-      const char* func = 0;
-#endif // (OPENSSL_VERSION_NUMBER < 0x30000000L)
-      std::string result(reason);
-      if (lib || func)
-      {
-        result += " (";
-        if (lib)
-          result += lib;
-        if (lib && func)
-          result += ", ";
-        if (func)
-          result += func;
-        result += ")";
-      }
-      return result;
-    }
-    return "asio.ssl error";
+    const char* s = ::ERR_reason_error_string(value);
+    return s ? s : "asio.ssl error";
   }
 };
 
@@ -98,8 +76,6 @@ public:
     switch (value)
     {
     case stream_truncated: return "stream truncated";
-    case unspecified_system_error: return "unspecified system error";
-    case unexpected_result: return "unexpected result";
     default: return "asio.ssl.stream error";
     }
   }

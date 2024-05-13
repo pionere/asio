@@ -16,13 +16,11 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-
-#if !defined(ASIO_NO_TS_EXECUTORS)
-
-#include <new>
 #include "asio/detail/atomic_count.hpp"
+#include "asio/detail/executor_op.hpp"
 #include "asio/detail/global.hpp"
 #include "asio/detail/memory.hpp"
+#include "asio/detail/recycling_allocator.hpp"
 #include "asio/executor.hpp"
 #include "asio/system_executor.hpp"
 
@@ -32,7 +30,47 @@ namespace asio {
 
 #if !defined(GENERATING_DOCUMENTATION)
 
-// Default polymorphic executor implementation.
+// Lightweight, move-only function object wrapper.
+class executor::function
+{
+public:
+  template <typename F, typename Alloc>
+  explicit function(F f, const Alloc& a)
+  {
+    // Allocate and construct an operation to wrap the function.
+    typedef detail::executor_op<F, Alloc> op;
+    typename op::ptr p = { detail::addressof(a), op::ptr::allocate(a), 0 };
+    op_ = new (p.v) op(static_cast<F&&>(f), a);
+    p.v = 0;
+  }
+
+  function(function&& other)
+    : op_(other.op_)
+  {
+    other.op_ = 0;
+  }
+
+  ~function()
+  {
+    if (op_)
+      op_->destroy();
+  }
+
+  void operator()()
+  {
+    if (op_)
+    {
+      detail::scheduler_operation* op = op_;
+      op_ = 0;
+      op->complete(this, asio::error_code(), 0);
+    }
+  }
+
+private:
+  detail::scheduler_operation* op_;
+};
+
+// Default polymorphic allocator implementation.
 template <typename Executor, typename Allocator>
 class executor::impl
   : public executor::impl_base
@@ -48,11 +86,6 @@ public:
     return p;
   }
 
-  static impl_base* create(std::nothrow_t, const Executor& e) noexcept
-  {
-    return new (std::nothrow) impl(e, std::allocator<void>());
-  }
-
   impl(const Executor& e, const Allocator& a) noexcept
     : impl_base(false),
       ref_count_(1),
@@ -63,13 +96,13 @@ public:
 
   impl_base* clone() const noexcept
   {
-    detail::ref_count_up(ref_count_);
+    ++ref_count_;
     return const_cast<impl_base*>(static_cast<const impl_base*>(this));
   }
 
   void destroy() noexcept
   {
-    if (detail::ref_count_down(ref_count_))
+    if (--ref_count_ == 0)
     {
       allocator_type alloc(allocator_);
       impl* p = this;
@@ -161,7 +194,7 @@ private:
   };
 };
 
-// Polymorphic executor specialisation for system_executor.
+// Polymorphic allocator specialisation for system_executor.
 template <typename Allocator>
 class executor::impl<system_executor, Allocator>
   : public executor::impl_base
@@ -169,11 +202,6 @@ class executor::impl<system_executor, Allocator>
 public:
   static impl_base* create(const system_executor&,
       const Allocator& = Allocator())
-  {
-    return &detail::global<impl<system_executor, std::allocator<void>> >();
-  }
-
-  static impl_base* create(std::nothrow_t, const system_executor&) noexcept
   {
     return &detail::global<impl<system_executor, std::allocator<void>> >();
   }
@@ -210,19 +238,19 @@ public:
   void dispatch(function&& f)
   {
     executor_.dispatch(static_cast<function&&>(f),
-        std::allocator<void>());
+        allocator_);
   }
 
   void post(function&& f)
   {
     executor_.post(static_cast<function&&>(f),
-        std::allocator<void>());
+        allocator_);
   }
 
   void defer(function&& f)
   {
     executor_.defer(static_cast<function&&>(f),
-        std::allocator<void>());
+        allocator_);
   }
 
   type_id_result_type target_type() const noexcept
@@ -247,17 +275,12 @@ public:
 
 private:
   system_executor executor_;
+  Allocator allocator_;
 };
 
 template <typename Executor>
 executor::executor(Executor e)
   : impl_(impl<Executor, std::allocator<void>>::create(e))
-{
-}
-
-template <typename Executor>
-executor::executor(std::nothrow_t, Executor e) noexcept
-  : impl_(impl<Executor, std::allocator<void>>::create(std::nothrow, e))
 {
 }
 
@@ -311,7 +334,5 @@ const Executor* executor::target() const noexcept
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
-
-#endif // !defined(ASIO_NO_TS_EXECUTORS)
 
 #endif // ASIO_IMPL_EXECUTOR_HPP

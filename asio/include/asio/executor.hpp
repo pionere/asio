@@ -16,13 +16,8 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-
-#if !defined(ASIO_NO_TS_EXECUTORS)
-
-#include <new>
 #include <typeinfo>
 #include "asio/detail/cstddef.hpp"
-#include "asio/detail/executor_function.hpp"
 #include "asio/detail/memory.hpp"
 #include "asio/detail/throw_exception.hpp"
 #include "asio/execution_context.hpp"
@@ -76,25 +71,6 @@ public:
   /// Construct a polymorphic wrapper for the specified executor.
   template <typename Executor>
   executor(Executor e);
-
-  /// Construct a polymorphic executor that points to the same target as
-  /// another polymorphic executor.
-  executor(std::nothrow_t, const executor& other) noexcept
-    : impl_(other.clone())
-  {
-  }
-
-  /// Construct a polymorphic executor that moves the target from another
-  /// polymorphic executor.
-  executor(std::nothrow_t, executor&& other) noexcept
-    : impl_(other.impl_)
-  {
-    other.impl_ = 0;
-  }
-
-  /// Construct a polymorphic wrapper for the specified executor.
-  template <typename Executor>
-  executor(std::nothrow_t, Executor e) noexcept;
 
   /// Allocator-aware constructor to create a polymorphic wrapper for the
   /// specified executor.
@@ -273,7 +249,7 @@ public:
 
 private:
 #if !defined(GENERATING_DOCUMENTATION)
-  typedef detail::executor_function function;
+  class function;
   template <typename, typename> class impl;
 
 #if !defined(ASIO_NO_TYPEID)
@@ -357,7 +333,5 @@ ASIO_USES_ALLOCATOR(asio::executor)
 #if defined(ASIO_HEADER_ONLY)
 # include "asio/impl/executor.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
-
-#endif // !defined(ASIO_NO_TS_EXECUTORS)
 
 #endif // ASIO_EXECUTOR_HPP

@@ -16,8 +16,6 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-#include <functional>
-#include "asio/detail/cstdint.hpp"
 #include "asio/ip/address.hpp"
 #include "asio/ip/detail/endpoint.hpp"
 
@@ -29,9 +27,6 @@
 
 namespace asio {
 namespace ip {
-
-/// Type used for storing port numbers.
-typedef uint_least16_t port_type;
 
 /// Describes an endpoint for a version-independent IP socket.
 /**
@@ -83,7 +78,7 @@ public:
    * @endcode
    */
   basic_endpoint(const InternetProtocol& internet_protocol,
-      port_type port_num) noexcept
+      unsigned short port_num) noexcept
     : impl_(internet_protocol.family(), port_num)
   {
   }
@@ -92,7 +87,7 @@ public:
   /// constructor may be used for accepting connections on a specific interface
   /// or for making a connection to a remote endpoint.
   basic_endpoint(const asio::ip::address& addr,
-      port_type port_num) noexcept
+      unsigned short port_num) noexcept
     : impl_(addr, port_num)
   {
   }
@@ -163,14 +158,14 @@ public:
 
   /// Get the port associated with the endpoint. The port number is always in
   /// the host's byte order.
-  port_type port() const noexcept
+  unsigned short port() const noexcept
   {
     return impl_.port();
   }
 
   /// Set the port associated with the endpoint. The port number is always in
   /// the host's byte order.
-  void port(port_type port_num) noexcept
+  void port(unsigned short port_num) noexcept
   {
     impl_.port(port_num);
   }
@@ -257,23 +252,6 @@ std::basic_ostream<Elem, Traits>& operator<<(
 
 } // namespace ip
 } // namespace asio
-
-namespace std {
-
-template <typename InternetProtocol>
-struct hash<asio::ip::basic_endpoint<InternetProtocol>>
-{
-  std::size_t operator()(
-      const asio::ip::basic_endpoint<InternetProtocol>& ep)
-    const noexcept
-  {
-    std::size_t hash1 = std::hash<asio::ip::address>()(ep.address());
-    std::size_t hash2 = std::hash<unsigned short>()(ep.port());
-    return hash1 ^ (hash2 + 0x9e3779b9 + (hash1 << 6) + (hash1 >> 2));
-  }
-};
-
-} // namespace std
 
 #include "asio/detail/pop_options.hpp"
 

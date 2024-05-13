@@ -16,7 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/bind_handler.hpp"
+#include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
+#include "asio/detail/handler_invoke_helpers.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -195,10 +197,62 @@ public:
 };
 
 template <typename Dispatcher, typename Handler, typename IsContinuation>
+inline void* asio_handler_allocate(std::size_t size,
+    wrapped_handler<Dispatcher, Handler, IsContinuation>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Dispatcher, typename Handler, typename IsContinuation>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    wrapped_handler<Dispatcher, Handler, IsContinuation>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Dispatcher, typename Handler, typename IsContinuation>
 inline bool asio_handler_is_continuation(
     wrapped_handler<Dispatcher, Handler, IsContinuation>* this_handler)
 {
   return IsContinuation()(this_handler->dispatcher_, this_handler->handler_);
+}
+
+template <typename Function, typename Dispatcher,
+    typename Handler, typename IsContinuation>
+inline void asio_handler_invoke(Function& function,
+    wrapped_handler<Dispatcher, Handler, IsContinuation>* this_handler)
+{
+  this_handler->dispatcher_.dispatch(
+      rewrapped_handler<Function, Handler>(
+        function, this_handler->handler_));
+}
+
+template <typename Function, typename Dispatcher,
+    typename Handler, typename IsContinuation>
+inline void asio_handler_invoke(const Function& function,
+    wrapped_handler<Dispatcher, Handler, IsContinuation>* this_handler)
+{
+  this_handler->dispatcher_.dispatch(
+      rewrapped_handler<Function, Handler>(
+        function, this_handler->handler_));
+}
+
+template <typename Handler, typename Context>
+inline void* asio_handler_allocate(std::size_t size,
+    rewrapped_handler<Handler, Context>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->context_);
+}
+
+template <typename Handler, typename Context>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    rewrapped_handler<Handler, Context>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->context_);
 }
 
 template <typename Dispatcher, typename Context>
@@ -207,6 +261,22 @@ inline bool asio_handler_is_continuation(
 {
   return asio_handler_cont_helpers::is_continuation(
       this_handler->context_);
+}
+
+template <typename Function, typename Handler, typename Context>
+inline void asio_handler_invoke(Function& function,
+    rewrapped_handler<Handler, Context>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->context_);
+}
+
+template <typename Function, typename Handler, typename Context>
+inline void asio_handler_invoke(const Function& function,
+    rewrapped_handler<Handler, Context>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->context_);
 }
 
 } // namespace detail

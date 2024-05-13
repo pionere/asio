@@ -19,8 +19,6 @@
 #include "asio/detail/scoped_ptr.hpp"
 #include "asio/detail/thread.hpp"
 
-#include "asio/detail/push_options.hpp"
-
 namespace asio {
 namespace detail {
 
@@ -66,12 +64,6 @@ public:
     }
   }
 
-  // Test whether the group is empty.
-  bool empty() const
-  {
-    return first_ == 0;
-  }
-
 private:
   // Structure used to track a single thread in the group.
   struct item
@@ -93,7 +85,5 @@ private:
 
 } // namespace detail
 } // namespace asio
-
-#include "asio/detail/pop_options.hpp"
 
 #endif // ASIO_DETAIL_THREAD_GROUP_HPP

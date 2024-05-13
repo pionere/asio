@@ -17,8 +17,6 @@
 
 #include "asio/detail/config.hpp"
 
-#include "asio/detail/base_from_cancellation_state.hpp"
-#include "asio/detail/handler_tracking.hpp"
 #include "asio/ssl/detail/engine.hpp"
 #include "asio/ssl/detail/stream_core.hpp"
 #include "asio/write.hpp"
@@ -33,7 +31,6 @@ template <typename Stream, typename Operation>
 std::size_t io(Stream& next_layer, stream_core& core,
     const Operation& op, asio::error_code& ec)
 {
-  asio::error_code io_ec;
   std::size_t bytes_transferred = 0;
   do switch (op(core.engine_, ec, bytes_transferred))
   {
@@ -42,12 +39,8 @@ std::size_t io(Stream& next_layer, stream_core& core,
     // If the input buffer is empty then we need to read some more data from
     // the underlying transport.
     if (core.input_.size() == 0)
-    {
       core.input_ = asio::buffer(core.input_buffer_,
-          next_layer.read_some(core.input_buffer_, io_ec));
-      if (!ec)
-        ec = io_ec;
-    }
+          next_layer.read_some(core.input_buffer_, ec));
 
     // Pass the new input data to the engine.
     core.input_ = core.engine_.put_input(core.input_);
@@ -60,9 +53,7 @@ std::size_t io(Stream& next_layer, stream_core& core,
     // Get output data from the engine and write it to the underlying
     // transport.
     asio::write(next_layer,
-        core.engine_.get_output(core.output_buffer_), io_ec);
-    if (!ec)
-      ec = io_ec;
+        core.engine_.get_output(core.output_buffer_), ec);
 
     // Try the operation again.
     continue;
@@ -72,9 +63,7 @@ std::size_t io(Stream& next_layer, stream_core& core,
     // Get output data from the engine and write it to the underlying
     // transport.
     asio::write(next_layer,
-        core.engine_.get_output(core.output_buffer_), io_ec);
-    if (!ec)
-      ec = io_ec;
+        core.engine_.get_output(core.output_buffer_), ec);
 
     // Operation is complete. Return result to caller.
     core.engine_.map_error_code(ec);
@@ -95,13 +84,11 @@ std::size_t io(Stream& next_layer, stream_core& core,
 
 template <typename Stream, typename Operation, typename Handler>
 class io_op
-  : public asio::detail::base_from_cancellation_state<Handler>
 {
 public:
   io_op(Stream& next_layer, stream_core& core,
       const Operation& op, Handler& handler)
-    : asio::detail::base_from_cancellation_state<Handler>(handler),
-      next_layer_(next_layer),
+    : next_layer_(next_layer),
       core_(core),
       op_(op),
       start_(0),
@@ -112,8 +99,7 @@ public:
   }
 
   io_op(const io_op& other)
-    : asio::detail::base_from_cancellation_state<Handler>(other),
-      next_layer_(other.next_layer_),
+    : next_layer_(other.next_layer_),
       core_(other.core_),
       op_(other.op_),
       start_(other.start_),
@@ -125,10 +111,7 @@ public:
   }
 
   io_op(io_op&& other)
-    : asio::detail::base_from_cancellation_state<Handler>(
-        static_cast<
-          asio::detail::base_from_cancellation_state<Handler>&&>(other)),
-      next_layer_(other.next_layer_),
+    : next_layer_(other.next_layer_),
       core_(other.core_),
       op_(static_cast<Operation&&>(other.op_)),
       start_(other.start_),
@@ -168,9 +151,6 @@ public:
             // Prevent other read operations from being started.
             core_.pending_read_.expires_at(core_.pos_infin());
 
-            ASIO_HANDLER_LOCATION((
-                  __FILE__, __LINE__, Operation::tracking_name()));
-
             // Start reading some data from the underlying transport.
             next_layer_.async_read_some(
                 asio::buffer(core_.input_buffer_),
@@ -178,9 +158,6 @@ public:
           }
           else
           {
-            ASIO_HANDLER_LOCATION((
-                  __FILE__, __LINE__, Operation::tracking_name()));
-
             // Wait until the current read operation completes.
             core_.pending_read_.async_wait(static_cast<io_op&&>(*this));
           }
@@ -201,9 +178,6 @@ public:
             // Prevent other write operations from being started.
             core_.pending_write_.expires_at(core_.pos_infin());
 
-            ASIO_HANDLER_LOCATION((
-                  __FILE__, __LINE__, Operation::tracking_name()));
-
             // Start writing all the data to the underlying transport.
             asio::async_write(next_layer_,
                 core_.engine_.get_output(core_.output_buffer_),
@@ -211,9 +185,6 @@ public:
           }
           else
           {
-            ASIO_HANDLER_LOCATION((
-                  __FILE__, __LINE__, Operation::tracking_name()));
-
             // Wait until the current write operation completes.
             core_.pending_write_.async_wait(static_cast<io_op&&>(*this));
           }
@@ -231,9 +202,6 @@ public:
           // read so the handler runs "as-if" posted using io_context::post().
           if (start)
           {
-            ASIO_HANDLER_LOCATION((
-                  __FILE__, __LINE__, Operation::tracking_name()));
-
             next_layer_.async_read_some(
                 asio::buffer(core_.input_buffer_, 0),
                 static_cast<io_op&&>(*this));
@@ -267,13 +235,6 @@ public:
           // Release any waiting read operations.
           core_.pending_read_.expires_at(core_.neg_infin());
 
-          // Check for cancellation before continuing.
-          if (this->cancelled() != cancellation_type::none)
-          {
-            ec_ = asio::error::operation_aborted;
-            break;
-          }
-
           // Try the operation again.
           continue;
 
@@ -281,13 +242,6 @@ public:
 
           // Release any waiting write operations.
           core_.pending_write_.expires_at(core_.neg_infin());
-
-          // Check for cancellation before continuing.
-          if (this->cancelled() != cancellation_type::none)
-          {
-            ec_ = asio::error::operation_aborted;
-            break;
-          }
 
           // Try the operation again.
           continue;
@@ -328,11 +282,45 @@ public:
 };
 
 template <typename Stream, typename Operation, typename Handler>
+inline void* asio_handler_allocate(std::size_t size,
+    io_op<Stream, Operation, Handler>* this_handler)
+{
+  return asio_handler_alloc_helpers::allocate(
+      size, this_handler->handler_);
+}
+
+template <typename Stream, typename Operation, typename Handler>
+inline void asio_handler_deallocate(void* pointer, std::size_t size,
+    io_op<Stream, Operation, Handler>* this_handler)
+{
+  asio_handler_alloc_helpers::deallocate(
+      pointer, size, this_handler->handler_);
+}
+
+template <typename Stream, typename Operation, typename Handler>
 inline bool asio_handler_is_continuation(
     io_op<Stream, Operation, Handler>* this_handler)
 {
   return this_handler->start_ == 0 ? true
     : asio_handler_cont_helpers::is_continuation(this_handler->handler_);
+}
+
+template <typename Function, typename Stream,
+    typename Operation, typename Handler>
+inline void asio_handler_invoke(Function& function,
+    io_op<Stream, Operation, Handler>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
+}
+
+template <typename Function, typename Stream,
+    typename Operation, typename Handler>
+inline void asio_handler_invoke(const Function& function,
+    io_op<Stream, Operation, Handler>* this_handler)
+{
+  asio_handler_invoke_helpers::invoke(
+      function, this_handler->handler_);
 }
 
 template <typename Stream, typename Operation, typename Handler>
@@ -347,25 +335,31 @@ inline void async_io(Stream& next_layer, stream_core& core,
 } // namespace detail
 } // namespace ssl
 
-template <template <typename, typename> class Associator,
-    typename Stream, typename Operation,
-    typename Handler, typename DefaultCandidate>
-struct associator<Associator,
-    ssl::detail::io_op<Stream, Operation, Handler>,
-    DefaultCandidate>
-  : Associator<Handler, DefaultCandidate>
+template <typename Stream, typename Operation,
+    typename Handler, typename Allocator>
+struct associated_allocator<
+    ssl::detail::io_op<Stream, Operation, Handler>, Allocator>
 {
-  static typename Associator<Handler, DefaultCandidate>::type get(
-      const ssl::detail::io_op<Stream, Operation, Handler>& h) noexcept
-  {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_);
-  }
+  typedef typename associated_allocator<Handler, Allocator>::type type;
 
-  static auto get(const ssl::detail::io_op<Stream, Operation, Handler>& h,
-      const DefaultCandidate& c) noexcept
-    -> decltype(Associator<Handler, DefaultCandidate>::get(h.handler_, c))
+  static type get(const ssl::detail::io_op<Stream, Operation, Handler>& h,
+      const Allocator& a = Allocator()) noexcept
   {
-    return Associator<Handler, DefaultCandidate>::get(h.handler_, c);
+    return associated_allocator<Handler, Allocator>::get(h.handler_, a);
+  }
+};
+
+template <typename Stream, typename Operation,
+    typename Handler, typename Executor>
+struct associated_executor<
+    ssl::detail::io_op<Stream, Operation, Handler>, Executor>
+{
+  typedef typename associated_executor<Handler, Executor>::type type;
+
+  static type get(const ssl::detail::io_op<Stream, Operation, Handler>& h,
+      const Executor& ex = Executor()) noexcept
+  {
+    return associated_executor<Handler, Executor>::get(h.handler_, ex);
   }
 };
 

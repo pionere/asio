@@ -96,8 +96,9 @@ public:
       const implementation_type& impl) const;
 
 private:
-  // Helper function to dispatch a handler.
-  ASIO_DECL void do_dispatch(implementation_type& impl, operation* op);
+  // Helper function to dispatch a handler. Returns true if the handler should
+  // be dispatched immediately.
+  ASIO_DECL bool do_dispatch(implementation_type& impl, operation* op);
 
   // Helper function to post a handler.
   ASIO_DECL void do_post(implementation_type& impl,
@@ -107,11 +108,8 @@ private:
       operation* base, const asio::error_code& ec,
       std::size_t bytes_transferred);
 
-  // The io_context used to obtain an I/O executor.
-  io_context& io_context_;
-
   // The io_context implementation used to post completions.
-  io_context_impl& io_context_impl_;
+  io_context_impl& io_context_;
 
   // Mutex to protect access to the array of implementations.
   asio::detail::mutex mutex_;

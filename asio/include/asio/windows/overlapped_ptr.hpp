@@ -49,25 +49,10 @@ public:
   }
 
   /// Construct an overlapped_ptr to contain the specified handler.
-  template <typename ExecutionContext, typename Handler>
-  explicit overlapped_ptr(ExecutionContext& context,
-      Handler&& handler,
-      constraint_t<
-        is_convertible<ExecutionContext&, execution_context&>::value
-      > = 0)
-    : impl_(context.get_executor(), static_cast<Handler&&>(handler))
-  {
-  }
-
-  /// Construct an overlapped_ptr to contain the specified handler.
-  template <typename Executor, typename Handler>
-  explicit overlapped_ptr(const Executor& ex,
-      Handler&& handler,
-      constraint_t<
-        execution::is_executor<Executor>::value
-          || is_executor<Executor>::value
-      > = 0)
-    : impl_(ex, static_cast<Handler&&>(handler))
+  template <typename Handler>
+  explicit overlapped_ptr(asio::io_context& io_context,
+      Handler&& handler)
+    : impl_(io_context, static_cast<Handler&&>(handler))
   {
   }
 
@@ -84,25 +69,10 @@ public:
 
   /// Reset to contain the specified handler, freeing any current OVERLAPPED
   /// object.
-  template <typename ExecutionContext, typename Handler>
-  void reset(ExecutionContext& context, Handler&& handler,
-      constraint_t<
-        is_convertible<ExecutionContext&, execution_context&>::value
-      > = 0)
+  template <typename Handler>
+  void reset(asio::io_context& io_context, Handler&& handler)
   {
-    impl_.reset(context.get_executor(), static_cast<Handler&&>(handler));
-  }
-
-  /// Reset to contain the specified handler, freeing any current OVERLAPPED
-  /// object.
-  template <typename Executor, typename Handler>
-  void reset(const Executor& ex, Handler&& handler,
-      constraint_t<
-        execution::is_executor<Executor>::value
-          || is_executor<Executor>::value
-      > = 0)
-  {
-    impl_.reset(ex, static_cast<Handler&&>(handler));
+    impl_.reset(io_context, static_cast<Handler&&>(handler));
   }
 
   /// Get the contained OVERLAPPED object.

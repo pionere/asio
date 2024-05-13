@@ -16,7 +16,6 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-#include <functional>
 #include <string>
 #include "asio/detail/array.hpp"
 #include "asio/detail/cstdint.hpp"
@@ -396,20 +395,6 @@ std::basic_ostream<Elem, Traits>& operator<<(
 
 } // namespace ip
 } // namespace asio
-
-namespace std {
-
-template <>
-struct hash<asio::ip::address_v4>
-{
-  std::size_t operator()(const asio::ip::address_v4& addr)
-    const noexcept
-  {
-    return std::hash<unsigned int>()(addr.to_uint());
-  }
-};
-
-} // namespace std
 
 #include "asio/detail/pop_options.hpp"
 

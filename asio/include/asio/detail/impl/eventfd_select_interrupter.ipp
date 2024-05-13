@@ -134,7 +134,8 @@ bool eventfd_select_interrupter::reset()
       int bytes_read = ::read(read_descriptor_, &counter, sizeof(uint64_t));
       if (bytes_read < 0 && errno == EINTR)
         continue;
-      return true;
+      bool was_interrupted = (bytes_read > 0);
+      return was_interrupted;
     }
   }
   else
@@ -144,19 +145,12 @@ bool eventfd_select_interrupter::reset()
       // Clear all data from the pipe.
       char data[1024];
       int bytes_read = ::read(read_descriptor_, data, sizeof(data));
-      if (bytes_read == sizeof(data))
+      if (bytes_read < 0 && errno == EINTR)
         continue;
-      if (bytes_read > 0)
-        return true;
-      if (bytes_read == 0)
-        return false;
-      if (errno == EINTR)
-        continue;
-      if (errno == EWOULDBLOCK)
-        return true;
-      if (errno == EAGAIN)
-        return true;
-      return false;
+      bool was_interrupted = (bytes_read > 0);
+      while (bytes_read == sizeof(data))
+        bytes_read = ::read(read_descriptor_, data, sizeof(data));
+      return was_interrupted;
     }
   }
 }

@@ -37,14 +37,12 @@ class packaged_handler;
 
 } // namespace detail
 
-/// A @ref completion_token type that causes an asynchronous operation to return
-/// a future.
+/// Class used to specify that an asynchronous operation should return a future.
 /**
- * The use_future_t class is a completion token type that is used to indicate
- * that an asynchronous operation should return a std::future object. A
- * use_future_t object may be passed as a completion token to an asynchronous
- * operation, typically using the special value @c asio::use_future. For
- * example:
+ * The use_future_t class is used to indicate that an asynchronous operation
+ * should return a std::future object. A use_future_t object may be passed as a
+ * handler to an asynchronous operation, typically using the special value @c
+ * asio::use_future. For example:
  *
  * @code std::future<std::size_t> my_future
  *   = my_socket.async_read_some(my_buffer, asio::use_future); @endcode
@@ -116,7 +114,7 @@ public:
 #if defined(GENERATING_DOCUMENTATION)
   unspecified
 #else // defined(GENERATING_DOCUMENTATION)
-  detail::packaged_token<decay_t<Function>, Allocator>
+  detail::packaged_token<typename decay<Function>::type, Allocator>
 #endif // defined(GENERATING_DOCUMENTATION)
   operator()(Function&& f) const;
 
@@ -135,9 +133,9 @@ private:
     }
   };
 
-  conditional_t<
+  typename conditional<
     is_same<std::allocator<void>, Allocator>::value,
-    std_allocator_void, Allocator> allocator_;
+    std_allocator_void, Allocator>::type allocator_;
 };
 
 /// A @ref completion_token object that causes an asynchronous operation to

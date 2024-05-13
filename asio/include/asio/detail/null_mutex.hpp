@@ -17,6 +17,8 @@
 
 #include "asio/detail/config.hpp"
 
+#if !defined(ASIO_HAS_THREADS)
+
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/scoped_lock.hpp"
 
@@ -56,5 +58,7 @@ public:
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
+
+#endif // !defined(ASIO_HAS_THREADS)
 
 #endif // ASIO_DETAIL_NULL_MUTEX_HPP

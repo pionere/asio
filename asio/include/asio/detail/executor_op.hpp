@@ -18,6 +18,7 @@
 #include "asio/detail/config.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
+#include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/scheduler_operation.hpp"
 
 #include "asio/detail/push_options.hpp"
@@ -45,7 +46,6 @@ public:
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
-    ASIO_ASSUME(base != 0);
     executor_op* o(static_cast<executor_op*>(base));
     Alloc allocator(o->allocator_);
     ptr p = { detail::addressof(allocator), o, o };
@@ -66,7 +66,7 @@ public:
     {
       fenced_block b(fenced_block::half);
       ASIO_HANDLER_INVOCATION_BEGIN(());
-      static_cast<Handler&&>(handler)();
+      asio_handler_invoke_helpers::invoke(handler, handler);
       ASIO_HANDLER_INVOCATION_END;
     }
   }

@@ -101,17 +101,12 @@ bool pipe_select_interrupter::reset()
   {
     char data[1024];
     signed_size_type bytes_read = ::read(read_descriptor_, data, sizeof(data));
-    if (bytes_read == sizeof(data))
+    if (bytes_read < 0 && errno == EINTR)
       continue;
-    if (bytes_read > 0)
-      return true;
-    if (bytes_read == 0)
-      return false;
-    if (errno == EINTR)
-      continue;
-    if (errno == EWOULDBLOCK || errno == EAGAIN)
-      return true;
-    return false;
+    bool was_interrupted = (bytes_read > 0);
+    while (bytes_read == sizeof(data))
+      bytes_read = ::read(read_descriptor_, data, sizeof(data));
+    return was_interrupted;
   }
 }
 

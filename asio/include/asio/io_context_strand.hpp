@@ -17,8 +17,7 @@
 
 #include "asio/detail/config.hpp"
 
-#if !defined(ASIO_NO_EXTENSIONS) \
-  && !defined(ASIO_NO_TS_EXECUTORS)
+#if !defined(ASIO_NO_EXTENSIONS)
 
 #include "asio/async_result.hpp"
 #include "asio/detail/handler_type_requirements.hpp"
@@ -64,7 +63,8 @@ namespace asio {
  * @li @c s.dispatch(a) happens-before @c s.dispatch(b), where both are
  * performed outside the strand
  *   
- * then @c a() happens-before @c b()
+ * then @c asio_handler_invoke(a1, &a1) happens-before
+ * @c asio_handler_invoke(b1, &b1).
  * 
  * Note that in the following case:
  * @code async_op_1(..., s.wrap(a));
@@ -87,12 +87,6 @@ namespace asio {
  */
 class io_context::strand
 {
-private:
-#if !defined(ASIO_NO_DEPRECATED)
-  struct initiate_dispatch;
-  struct initiate_post;
-#endif // !defined(ASIO_NO_DEPRECATED)
-
 public:
   /// Constructor.
   /**
@@ -108,17 +102,6 @@ public:
     service_.construct(impl_);
   }
 
-  /// Copy constructor.
-  /**
-   * Creates a copy such that both strand objects share the same underlying
-   * state.
-   */
-  strand(const strand& other) noexcept
-    : service_(other.service_),
-      impl_(other.impl_)
-  {
-  }
-
   /// Destructor.
   /**
    * Destroys a strand.
@@ -129,6 +112,36 @@ public:
   ~strand()
   {
   }
+
+#if !defined(ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use context().) Get the io_context associated with the
+  /// strand.
+  /**
+   * This function may be used to obtain the io_context object that the strand
+   * uses to dispatch handlers for asynchronous operations.
+   *
+   * @return A reference to the io_context object that the strand will use to
+   * dispatch handlers. Ownership is not transferred to the caller.
+   */
+  asio::io_context& get_io_context()
+  {
+    return service_.get_io_context();
+  }
+
+  /// (Deprecated: Use context().) Get the io_context associated with the
+  /// strand.
+  /**
+   * This function may be used to obtain the io_context object that the strand
+   * uses to dispatch handlers for asynchronous operations.
+   *
+   * @return A reference to the io_context object that the strand will use to
+   * dispatch handlers. Ownership is not transferred to the caller.
+   */
+  asio::io_context& get_io_service()
+  {
+    return service_.get_io_context();
+  }
+#endif // !defined(ASIO_NO_DEPRECATED)
 
   /// Obtain the underlying execution context.
   asio::io_context& context() const noexcept
@@ -172,7 +185,7 @@ public:
   template <typename Function, typename Allocator>
   void dispatch(Function&& f, const Allocator& a) const
   {
-    decay_t<Function> tmp(static_cast<Function&&>(f));
+    typename decay<Function>::type tmp(static_cast<Function&&>(f));
     service_.dispatch(impl_, tmp);
     (void)a;
   }
@@ -199,13 +212,19 @@ public:
    * @code void handler(); @endcode
    */
   template <typename LegacyCompletionHandler>
-  auto dispatch(LegacyCompletionHandler&& handler)
-    -> decltype(
-      async_initiate<LegacyCompletionHandler, void ()>(
-        declval<initiate_dispatch>(), handler, this))
+  ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+  dispatch(LegacyCompletionHandler&& handler)
   {
-    return async_initiate<LegacyCompletionHandler, void ()>(
-        initiate_dispatch(), handler, this);
+    // If you get an error on the following line it means that your handler does
+    // not meet the documented type requirements for a LegacyCompletionHandler.
+    ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
+        LegacyCompletionHandler, handler) type_check;
+
+    async_completion<LegacyCompletionHandler, void ()> init(handler);
+
+    service_.dispatch(impl_, init.completion_handler);
+
+    return init.result.get();
   }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
@@ -225,7 +244,7 @@ public:
   template <typename Function, typename Allocator>
   void post(Function&& f, const Allocator& a) const
   {
-    decay_t<Function> tmp(static_cast<Function&&>(f));
+    typename decay<Function>::type tmp(static_cast<Function&&>(f));
     service_.post(impl_, tmp);
     (void)a;
   }
@@ -248,13 +267,19 @@ public:
    * @code void handler(); @endcode
    */
   template <typename LegacyCompletionHandler>
-  auto post(LegacyCompletionHandler&& handler)
-    -> decltype(
-      async_initiate<LegacyCompletionHandler, void ()>(
-        declval<initiate_post>(), handler, this))
+  ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
+  post(LegacyCompletionHandler&& handler)
   {
-    return async_initiate<LegacyCompletionHandler, void ()>(
-        initiate_post(), handler, this);
+    // If you get an error on the following line it means that your handler does
+    // not meet the documented type requirements for a LegacyCompletionHandler.
+    ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
+        LegacyCompletionHandler, handler) type_check;
+
+    async_completion<LegacyCompletionHandler, void ()> init(handler);
+
+    service_.post(impl_, init.completion_handler);
+
+    return init.result.get();
   }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
@@ -274,7 +299,7 @@ public:
   template <typename Function, typename Allocator>
   void defer(Function&& f, const Allocator& a) const
   {
-    decay_t<Function> tmp(static_cast<Function&&>(f));
+    typename decay<Function>::type tmp(static_cast<Function&&>(f));
     service_.post(impl_, tmp);
     (void)a;
   }
@@ -346,42 +371,6 @@ public:
   }
 
 private:
-#if !defined(ASIO_NO_DEPRECATED)
-  struct initiate_dispatch
-  {
-    template <typename LegacyCompletionHandler>
-    void operator()(LegacyCompletionHandler&& handler,
-        strand* self) const
-    {
-      // If you get an error on the following line it means that your
-      // handler does not meet the documented type requirements for a
-      // LegacyCompletionHandler.
-      ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
-          LegacyCompletionHandler, handler) type_check;
-
-      detail::non_const_lvalue<LegacyCompletionHandler> handler2(handler);
-      self->service_.dispatch(self->impl_, handler2.value);
-    }
-  };
-
-  struct initiate_post
-  {
-    template <typename LegacyCompletionHandler>
-    void operator()(LegacyCompletionHandler&& handler,
-        strand* self) const
-    {
-      // If you get an error on the following line it means that your
-      // handler does not meet the documented type requirements for a
-      // LegacyCompletionHandler.
-      ASIO_LEGACY_COMPLETION_HANDLER_CHECK(
-          LegacyCompletionHandler, handler) type_check;
-
-      detail::non_const_lvalue<LegacyCompletionHandler> handler2(handler);
-      self->service_.post(self->impl_, handler2.value);
-    }
-  };
-#endif // !defined(ASIO_NO_DEPRECATED)
-
   asio::detail::strand_service& service_;
   mutable asio::detail::strand_service::implementation_type impl_;
 };
@@ -391,6 +380,5 @@ private:
 #include "asio/detail/pop_options.hpp"
 
 #endif // !defined(ASIO_NO_EXTENSIONS)
-       //   && !defined(ASIO_NO_TS_EXECUTORS)
 
 #endif // ASIO_IO_CONTEXT_STRAND_HPP

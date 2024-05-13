@@ -23,6 +23,7 @@
 #include "asio/buffered_stream_fwd.hpp"
 #include "asio/detail/noncopyable.hpp"
 #include "asio/error.hpp"
+#include "asio/io_context.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -46,7 +47,7 @@ class buffered_stream
 {
 public:
   /// The type of the next layer.
-  typedef remove_reference_t<Stream> next_layer_type;
+  typedef typename remove_reference<Stream>::type next_layer_type;
 
   /// The type of the lowest layer.
   typedef typename next_layer_type::lowest_layer_type lowest_layer_type;
@@ -56,17 +57,17 @@ public:
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
-  explicit buffered_stream(Arg&& a)
-    : inner_stream_impl_(static_cast<Arg&&>(a)),
+  explicit buffered_stream(Arg& a)
+    : inner_stream_impl_(a),
       stream_impl_(inner_stream_impl_)
   {
   }
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
-  explicit buffered_stream(Arg&& a,
-      std::size_t read_buffer_size, std::size_t write_buffer_size)
-    : inner_stream_impl_(static_cast<Arg&&>(a), write_buffer_size),
+  explicit buffered_stream(Arg& a, std::size_t read_buffer_size,
+      std::size_t write_buffer_size)
+    : inner_stream_impl_(a, write_buffer_size),
       stream_impl_(inner_stream_impl_, read_buffer_size)
   {
   }
@@ -94,6 +95,22 @@ public:
   {
     return stream_impl_.lowest_layer().get_executor();
   }
+
+#if !defined(ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use get_executor().) Get the io_context associated with the
+  /// object.
+  asio::io_context& get_io_context()
+  {
+    return stream_impl_.get_io_context();
+  }
+
+  /// (Deprecated: Use get_executor().) Get the io_context associated with the
+  /// object.
+  asio::io_context& get_io_service()
+  {
+    return stream_impl_.get_io_service();
+  }
+#endif // !defined(ASIO_NO_DEPRECATED)
 
   /// Close the stream.
   void close()
@@ -125,18 +142,10 @@ public:
   }
 
   /// Start an asynchronous flush.
-  /**
-   * @par Completion Signature
-   * @code void(asio::error_code, std::size_t) @endcode
-   */
-  template <
-      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) WriteHandler = default_completion_token_t<executor_type>>
-  auto async_flush(
-      WriteHandler&& handler = default_completion_token_t<executor_type>())
-    -> decltype(
-      declval<buffered_write_stream<Stream>&>().async_flush(
-        static_cast<WriteHandler&&>(handler)))
+  template <typename WriteHandler>
+  ASIO_INITFN_RESULT_TYPE(WriteHandler,
+      void (asio::error_code, std::size_t))
+  async_flush(WriteHandler&& handler)
   {
     return stream_impl_.next_layer().async_flush(
         static_cast<WriteHandler&&>(handler));
@@ -161,18 +170,11 @@ public:
 
   /// Start an asynchronous write. The data being written must be valid for the
   /// lifetime of the asynchronous operation.
-  /**
-   * @par Completion Signature
-   * @code void(asio::error_code, std::size_t) @endcode
-   */
-  template <typename ConstBufferSequence,
-      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) WriteHandler = default_completion_token_t<executor_type>>
-  auto async_write_some(const ConstBufferSequence& buffers,
-      WriteHandler&& handler = default_completion_token_t<executor_type>())
-    -> decltype(
-      declval<Stream&>().async_write_some(buffers,
-        static_cast<WriteHandler&&>(handler)))
+  template <typename ConstBufferSequence, typename WriteHandler>
+  ASIO_INITFN_RESULT_TYPE(WriteHandler,
+      void (asio::error_code, std::size_t))
+  async_write_some(const ConstBufferSequence& buffers,
+      WriteHandler&& handler)
   {
     return stream_impl_.async_write_some(buffers,
         static_cast<WriteHandler&&>(handler));
@@ -193,19 +195,10 @@ public:
   }
 
   /// Start an asynchronous fill.
-  /**
-   * @par Completion Signature
-   * @code void(asio::error_code, std::size_t) @endcode
-   */
-  template <
-      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) ReadHandler = default_completion_token_t<executor_type>>
-  auto async_fill(
-      ReadHandler&& handler = default_completion_token_t<executor_type>())
-    -> decltype(
-      declval<buffered_read_stream<
-        buffered_write_stream<Stream>>&>().async_fill(
-          static_cast<ReadHandler&&>(handler)))
+  template <typename ReadHandler>
+  ASIO_INITFN_RESULT_TYPE(ReadHandler,
+      void (asio::error_code, std::size_t))
+  async_fill(ReadHandler&& handler)
   {
     return stream_impl_.async_fill(static_cast<ReadHandler&&>(handler));
   }
@@ -229,18 +222,11 @@ public:
 
   /// Start an asynchronous read. The buffer into which the data will be read
   /// must be valid for the lifetime of the asynchronous operation.
-  /**
-   * @par Completion Signature
-   * @code void(asio::error_code, std::size_t) @endcode
-   */
-  template <typename MutableBufferSequence,
-      ASIO_COMPLETION_TOKEN_FOR(void (asio::error_code,
-        std::size_t)) ReadHandler = default_completion_token_t<executor_type>>
-  auto async_read_some(const MutableBufferSequence& buffers,
-      ReadHandler&& handler = default_completion_token_t<executor_type>())
-    -> decltype(
-      declval<Stream&>().async_read_some(buffers,
-        static_cast<ReadHandler&&>(handler)))
+  template <typename MutableBufferSequence, typename ReadHandler>
+  ASIO_INITFN_RESULT_TYPE(ReadHandler,
+      void (asio::error_code, std::size_t))
+  async_read_some(const MutableBufferSequence& buffers,
+      ReadHandler&& handler)
   {
     return stream_impl_.async_read_some(buffers,
         static_cast<ReadHandler&&>(handler));

@@ -16,10 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include "asio/detail/config.hpp"
-
-#if defined(ASIO_HAS_CHRONO)
-# include "asio/detail/chrono.hpp"
-#endif // defined(ASIO_HAS_CHRONO)
+#include "asio/detail/chrono.hpp"
 
 #if defined(ASIO_HAS_BOOST_DATE_TIME)
 # include "asio/detail/date_time_fwd.hpp"
@@ -82,16 +79,12 @@ class basic_waitable_timer;
 
 #endif // !defined(ASIO_BASIC_WAITABLE_TIMER_FWD_DECL)
 
-#if defined(ASIO_HAS_CHRONO)
-
 typedef basic_waitable_timer<chrono::system_clock> system_timer;
 
 typedef basic_waitable_timer<chrono::steady_clock> steady_timer;
 
 typedef basic_waitable_timer<chrono::high_resolution_clock>
   high_resolution_timer;
-
-#endif // defined(ASIO_HAS_CHRONO)
 
 template <class Protocol ASIO_SVC_TPARAM>
 class basic_socket;

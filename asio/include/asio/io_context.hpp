@@ -20,14 +20,11 @@
 #include <stdexcept>
 #include <typeinfo>
 #include "asio/async_result.hpp"
+#include "asio/detail/chrono.hpp"
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/wrapped_handler.hpp"
 #include "asio/error_code.hpp"
 #include "asio/execution_context.hpp"
-
-#if defined(ASIO_HAS_CHRONO)
-# include "asio/detail/chrono.hpp"
-#endif // defined(ASIO_HAS_CHRONO)
 
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
 # include "asio/detail/winsock_init.hpp"

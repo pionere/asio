@@ -1160,8 +1160,6 @@ ASIO_NODISCARD inline ASIO_CONST_BUFFER buffer(
       ? data.size() * sizeof(PodType) : max_size_in_bytes);
 }
 
-#if defined(ASIO_HAS_STD_ARRAY) || defined(GENERATING_DOCUMENTATION)
-
 /// Create a new modifiable buffer that represents the given POD array.
 /**
  * @returns A mutable_buffer value equivalent to:
@@ -1254,8 +1252,6 @@ ASIO_NODISCARD inline ASIO_CONST_BUFFER buffer(
       data.size() * sizeof(PodType) < max_size_in_bytes
       ? data.size() * sizeof(PodType) : max_size_in_bytes);
 }
-
-#endif // defined(ASIO_HAS_STD_ARRAY) || defined(GENERATING_DOCUMENTATION)
 
 /// Create a new modifiable buffer that represents the given POD vector.
 /**

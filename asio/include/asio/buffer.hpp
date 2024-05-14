@@ -392,8 +392,6 @@ inline const const_buffer* buffer_sequence_begin(const const_buffer& b)
   return &b;
 }
 
-#if defined(ASIO_HAS_DECLTYPE) || defined(GENERATING_DOCUMENTATION)
-
 /// Get an iterator to the first element in a buffer sequence.
 template <typename C>
 inline auto buffer_sequence_begin(C& c) -> decltype(c.begin())
@@ -407,22 +405,6 @@ inline auto buffer_sequence_begin(const C& c) -> decltype(c.begin())
 {
   return c.begin();
 }
-
-#else // defined(ASIO_HAS_DECLTYPE) || defined(GENERATING_DOCUMENTATION)
-
-template <typename C>
-inline typename C::iterator buffer_sequence_begin(C& c)
-{
-  return c.begin();
-}
-
-template <typename C>
-inline typename C::const_iterator buffer_sequence_begin(const C& c)
-{
-  return c.begin();
-}
-
-#endif // defined(ASIO_HAS_DECLTYPE) || defined(GENERATING_DOCUMENTATION)
 
 /*@}*/
 
@@ -445,8 +427,6 @@ inline const const_buffer* buffer_sequence_end(const const_buffer& b)
   return &b + 1;
 }
 
-#if defined(ASIO_HAS_DECLTYPE) || defined(GENERATING_DOCUMENTATION)
-
 /// Get an iterator to one past the end element in a buffer sequence.
 template <typename C>
 inline auto buffer_sequence_end(C& c) -> decltype(c.end())
@@ -460,22 +440,6 @@ inline auto buffer_sequence_end(const C& c) -> decltype(c.end())
 {
   return c.end();
 }
-
-#else // defined(ASIO_HAS_DECLTYPE) || defined(GENERATING_DOCUMENTATION)
-
-template <typename C>
-inline typename C::iterator buffer_sequence_end(C& c)
-{
-  return c.end();
-}
-
-template <typename C>
-inline typename C::const_iterator buffer_sequence_end(const C& c)
-{
-  return c.end();
-}
-
-#endif // defined(ASIO_HAS_DECLTYPE) || defined(GENERATING_DOCUMENTATION)
 
 /*@}*/
 

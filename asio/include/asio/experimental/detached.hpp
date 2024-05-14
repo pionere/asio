@@ -39,7 +39,7 @@ class detached_t
 {
 public:
   /// Constructor. 
-  ASIO_CONSTEXPR detached_t()
+  constexpr detached_t()
   {
   }
 };
@@ -49,11 +49,7 @@ public:
  * See the documentation for asio::experimental::detached_t for a usage
  * example.
  */
-#if defined(ASIO_HAS_CONSTEXPR) || defined(GENERATING_DOCUMENTATION)
 constexpr detached_t detached;
-#elif defined(ASIO_MSVC)
-__declspec(selectany) detached_t detached;
-#endif
 
 } // namespace experimental
 } // namespace asio

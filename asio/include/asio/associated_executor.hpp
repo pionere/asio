@@ -111,8 +111,8 @@ get_associated_executor(const T& t) noexcept
  * @returns <tt>associated_executor<T, Executor>::get(t, ex)</tt>
  */
 template <typename T, typename Executor>
-inline typename associated_executor<T, Executor>::type
-get_associated_executor(const T& t, const Executor& ex,
+ASIO_NODISCARD inline typename associated_executor<T, Executor>::type get_associated_executor(
+    const T& t, const Executor& ex,
     typename enable_if<is_executor<
       Executor>::value>::type* = 0) noexcept
 {

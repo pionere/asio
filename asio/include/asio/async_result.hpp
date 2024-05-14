@@ -93,8 +93,8 @@ public:
   }
 
 private:
-  async_result(const async_result&) ASIO_DELETED;
-  async_result& operator=(const async_result&) ASIO_DELETED;
+  async_result(const async_result&) = delete;
+  async_result& operator=(const async_result&) = delete;
 
 #if defined(ASIO_NO_DEPRECATED) || defined(GENERATING_DOCUMENTATION)
   // No data members.

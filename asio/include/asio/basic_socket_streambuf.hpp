@@ -45,38 +45,6 @@
 #endif // defined(ASIO_HAS_BOOST_DATE_TIME)
        // && defined(ASIO_USE_BOOST_DATE_TIME_FOR_SOCKET_IOSTREAM)
 
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-# include "asio/detail/variadic_templates.hpp"
-
-// A macro that should expand to:
-//   template <typename T1, ..., typename Tn>
-//   basic_socket_streambuf* connect(T1 x1, ..., Tn xn)
-//   {
-//     init_buffers();
-//     typedef typename Protocol::resolver resolver_type;
-//     resolver_type resolver(socket().get_executor().context());
-//     connect_to_endpoints(
-//         resolver.resolve(x1, ..., xn, ec_));
-//     return !ec_ ? this : 0;
-//   }
-// This macro should only persist within this file.
-
-# define ASIO_PRIVATE_CONNECT_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  basic_socket_streambuf* connect(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-  { \
-    init_buffers(); \
-    typedef typename Protocol::resolver resolver_type; \
-    resolver_type resolver(socket().get_executor().context()); \
-    connect_to_endpoints( \
-        resolver.resolve(ASIO_VARIADIC_BYVAL_ARGS(n), ec_)); \
-    return !ec_ ? this : 0; \
-  } \
-  /**/
-
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 #if !defined(ASIO_ENABLE_OLD_SERVICES)
 # define ASIO_SVC_T1 detail::deadline_timer_service<traits_helper>
 #endif // !defined(ASIO_ENABLE_OLD_SERVICES)
@@ -291,7 +259,7 @@ public:
    */
   template <typename T1, ..., typename TN>
   basic_socket_streambuf* connect(T1 t1, ..., TN tn);
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#else
   template <typename... T>
   basic_socket_streambuf* connect(T... x)
   {
@@ -301,8 +269,6 @@ public:
     connect_to_endpoints(resolver.resolve(x..., ec_));
     return !ec_ ? this : 0;
   }
-#else
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_CONNECT_DEF)
 #endif
 
   /// Close the connection.
@@ -695,10 +661,6 @@ private:
 #if !defined(ASIO_ENABLE_OLD_SERVICES)
 # undef ASIO_SVC_T1
 #endif // !defined(ASIO_ENABLE_OLD_SERVICES)
-
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-# undef ASIO_PRIVATE_CONNECT_DEF
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 #endif // !defined(ASIO_NO_IOSTREAM)
 

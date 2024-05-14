@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/async_result.hpp"
-#include "asio/detail/variadic_templates.hpp"
 #include "asio/handler_type.hpp"
 #include "asio/system_error.hpp"
 
@@ -35,29 +34,10 @@ namespace detail {
     {
     }
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
     template <typename... Args>
     void operator()(Args...)
     {
     }
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-    void operator()()
-    {
-    }
-
-#define ASIO_PRIVATE_DETACHED_DEF(n) \
-    template <ASIO_VARIADIC_TPARAMS(n)> \
-    void operator()(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-    { \
-    } \
-    /**/
-    ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_DETACHED_DEF)
-#undef ASIO_PRIVATE_DETACHED_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
   };
 
 } // namespace detail

@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 #include "asio/associated_executor.hpp"
 #include "asio/associated_allocator.hpp"
 #include "asio/async_result.hpp"
@@ -399,7 +398,7 @@ public:
   template <typename... Args> auto operator()(Args&& ...);
   template <typename... Args> auto operator()(Args&& ...) const;
 
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#else // defined(GENERATING_DOCUMENTATION)
 
   /// Forwarding function call operator.
   template <typename... Args>
@@ -415,70 +414,7 @@ public:
     return this->target_(static_cast<Args&&>(args)...);
   }
 
-#elif defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
-
-  typename detail::executor_binder_result_of0<T>::type operator()()
-  {
-    return this->target_();
-  }
-
-  typename detail::executor_binder_result_of0<T>::type operator()() const
-  {
-    return this->target_();
-  }
-
-#define ASIO_PRIVATE_BIND_EXECUTOR_CALL_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  typename result_of<T(ASIO_VARIADIC_TARGS(n))>::type operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    return this->target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  typename result_of<T(ASIO_VARIADIC_TARGS(n))>::type operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) const \
-  { \
-    return this->target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_BIND_EXECUTOR_CALL_DEF)
-#undef ASIO_PRIVATE_BIND_EXECUTOR_CALL_DEF
-
-#else // defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
-
-  typedef typename detail::executor_binder_result_type<T>::result_type_or_void
-    result_type_or_void;
-
-  result_type_or_void operator()()
-  {
-    return this->target_();
-  }
-
-  result_type_or_void operator()() const
-  {
-    return this->target_();
-  }
-
-#define ASIO_PRIVATE_BIND_EXECUTOR_CALL_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  result_type_or_void operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    return this->target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  result_type_or_void operator()( \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) const \
-  { \
-    return this->target_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_BIND_EXECUTOR_CALL_DEF)
-#undef ASIO_PRIVATE_BIND_EXECUTOR_CALL_DEF
-
-#endif // defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
+#endif // defined(GENERATING_DOCUMENTATION)
 
 private:
   typedef detail::executor_binder_base<T, Executor,

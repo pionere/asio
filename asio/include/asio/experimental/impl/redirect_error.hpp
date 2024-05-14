@@ -23,7 +23,6 @@
 #include "asio/detail/handler_cont_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 #include "asio/handler_type.hpp"
 #include "asio/system_error.hpp"
 
@@ -50,8 +49,6 @@ public:
     handler_();
   }
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
   template <typename Arg, typename... Args>
   typename enable_if<
     !is_same<typename decay<Arg>::type, asio::error_code>::value
@@ -69,47 +66,6 @@ public:
     ec_ = ec;
     handler_(static_cast<Args&&>(args)...);
   }
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-  template <typename Arg>
-  typename enable_if<
-    !is_same<typename decay<Arg>::type, asio::error_code>::value
-  >::type
-  operator()(Arg&& arg)
-  {
-    handler_(static_cast<Arg&&>(arg));
-  }
-
-  void operator()(const asio::error_code& ec)
-  {
-    ec_ = ec;
-    handler_();
-  }
-
-#define ASIO_PRIVATE_REDIRECT_ERROR_DEF(n) \
-  template <typename Arg, ASIO_VARIADIC_TPARAMS(n)> \
-  typename enable_if< \
-    !is_same<typename decay<Arg>::type, asio::error_code>::value \
-  >::type \
-  operator()(Arg&& arg, ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    handler_(static_cast<Arg&&>(arg), \
-        ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  void operator()(const asio::error_code& ec, \
-      ASIO_VARIADIC_MOVE_PARAMS(n)) \
-  { \
-    ec_ = ec; \
-    handler_(ASIO_VARIADIC_MOVE_ARGS(n)); \
-  } \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_REDIRECT_ERROR_DEF)
-#undef ASIO_PRIVATE_REDIRECT_ERROR_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 //private:
   asio::error_code& ec_;
@@ -162,8 +118,6 @@ struct redirect_error_signature
   typedef Signature type;
 };
 
-#if defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 template <typename R, typename... Args>
 struct redirect_error_signature<R(asio::error_code, Args...)>
 {
@@ -175,40 +129,6 @@ struct redirect_error_signature<R(const asio::error_code&, Args...)>
 {
   typedef R type(Args...);
 };
-
-#else // defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-template <typename R>
-struct redirect_error_signature<R(asio::error_code)>
-{
-  typedef R type();
-};
-
-template <typename R>
-struct redirect_error_signature<R(const asio::error_code&)>
-{
-  typedef R type();
-};
-
-#define ASIO_PRIVATE_REDIRECT_ERROR_DEF(n) \
-  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
-  struct redirect_error_signature< \
-      R(asio::error_code, ASIO_VARIADIC_TARGS(n))> \
-  { \
-    typedef R type(ASIO_VARIADIC_TARGS(n)); \
-  }; \
-  \
-  template <typename R, ASIO_VARIADIC_TPARAMS(n)> \
-  struct redirect_error_signature< \
-      R(const asio::error_code&, ASIO_VARIADIC_TARGS(n))> \
-  { \
-    typedef R type(ASIO_VARIADIC_TARGS(n)); \
-  }; \
-  /**/
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_REDIRECT_ERROR_DEF)
-#undef ASIO_PRIVATE_REDIRECT_ERROR_DEF
-
-#endif // defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 } // namespace detail
 } // namespace experimental

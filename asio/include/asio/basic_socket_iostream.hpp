@@ -27,57 +27,6 @@
 # include "asio/stream_socket_service.hpp"
 #endif // defined(ASIO_ENABLE_OLD_SERVICES)
 
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
-# include "asio/detail/variadic_templates.hpp"
-
-// A macro that should expand to:
-//   template <typename T1, ..., typename Tn>
-//   explicit basic_socket_iostream(T1 x1, ..., Tn xn)
-//     : std::basic_iostream<char>(
-//         &this->detail::socket_iostream_base<
-//           Protocol ASIO_SVC_TARG, Clock,
-//           WaitTraits ASIO_SVC_TARG1>::streambuf_)
-//   {
-//     if (rdbuf()->connect(x1, ..., xn) == 0)
-//       this->setstate(std::ios_base::failbit);
-//   }
-// This macro should only persist within this file.
-
-# define ASIO_PRIVATE_CTR_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  explicit basic_socket_iostream(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-    : std::basic_iostream<char>( \
-        &this->detail::socket_iostream_base< \
-          Protocol ASIO_SVC_TARG, Clock, \
-          WaitTraits ASIO_SVC_TARG1>::streambuf_) \
-  { \
-    this->setf(std::ios_base::unitbuf); \
-    if (rdbuf()->connect(ASIO_VARIADIC_BYVAL_ARGS(n)) == 0) \
-      this->setstate(std::ios_base::failbit); \
-  } \
-  /**/
-
-// A macro that should expand to:
-//   template <typename T1, ..., typename Tn>
-//   void connect(T1 x1, ..., Tn xn)
-//   {
-//     if (rdbuf()->connect(x1, ..., xn) == 0)
-//       this->setstate(std::ios_base::failbit);
-//   }
-// This macro should only persist within this file.
-
-# define ASIO_PRIVATE_CONNECT_DEF(n) \
-  template <ASIO_VARIADIC_TPARAMS(n)> \
-  void connect(ASIO_VARIADIC_BYVAL_PARAMS(n)) \
-  { \
-    if (rdbuf()->connect(ASIO_VARIADIC_BYVAL_ARGS(n)) == 0) \
-      this->setstate(std::ios_base::failbit); \
-  } \
-  /**/
-
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
@@ -253,7 +202,7 @@ public:
    */
   template <typename T1, ..., typename TN>
   explicit basic_socket_iostream(T1 t1, ..., TN tn);
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#else
   template <typename... T>
   explicit basic_socket_iostream(T... x)
     : std::basic_iostream<char>(
@@ -265,8 +214,6 @@ public:
     if (rdbuf()->connect(x...) == 0)
       this->setstate(std::ios_base::failbit);
   }
-#else
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_CTR_DEF)
 #endif
 
 #if defined(GENERATING_DOCUMENTATION)
@@ -278,15 +225,13 @@ public:
    */
   template <typename T1, ..., typename TN>
   void connect(T1 t1, ..., TN tn);
-#elif defined(ASIO_HAS_VARIADIC_TEMPLATES)
+#else
   template <typename... T>
   void connect(T... x)
   {
     if (rdbuf()->connect(x...) == 0)
       this->setstate(std::ios_base::failbit);
   }
-#else
-  ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_CONNECT_DEF)
 #endif
 
   /// Close the connection.
@@ -415,11 +360,6 @@ private:
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"
-
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-# undef ASIO_PRIVATE_CTR_DEF
-# undef ASIO_PRIVATE_CONNECT_DEF
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 #endif // !defined(ASIO_NO_IOSTREAM)
 

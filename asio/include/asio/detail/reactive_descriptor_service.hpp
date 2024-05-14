@@ -130,6 +130,7 @@ public:
   {
     descriptor_ops::ioctl(impl.descriptor_, impl.state_,
         command.name(), static_cast<ioctl_arg_type*>(command.data()), ec);
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -145,6 +146,7 @@ public:
   {
     descriptor_ops::set_user_non_blocking(
         impl.descriptor_, impl.state_, mode, ec);
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -184,6 +186,7 @@ public:
       break;
     }
 
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -247,7 +250,7 @@ public:
   {
     // Wait for descriptor to become ready.
     descriptor_ops::poll_write(impl.descriptor_, impl.state_, ec);
-
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -314,7 +317,7 @@ public:
   {
     // Wait for descriptor to become ready.
     descriptor_ops::poll_read(impl.descriptor_, impl.state_, ec);
-
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 

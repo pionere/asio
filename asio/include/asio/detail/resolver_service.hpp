@@ -80,6 +80,7 @@ public:
         query.service_name().c_str(), query.hints(), &address_info, ec);
     auto_addrinfo auto_address_info(address_info);
 
+    ASIO_ERROR_LOCATION(ec);
     return ec ? results_type() : results_type::create(
         address_info, query.host_name(), query.service_name());
   }
@@ -112,6 +113,7 @@ public:
         host_name, NI_MAXHOST, service_name, NI_MAXSERV,
         endpoint.protocol().type(), ec);
 
+    ASIO_ERROR_LOCATION(ec);
     return ec ? results_type() : results_type::create(
         endpoint, host_name, service_name);
   }

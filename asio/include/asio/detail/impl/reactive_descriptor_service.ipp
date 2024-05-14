@@ -105,6 +105,7 @@ asio::error_code reactive_descriptor_service::assign(
   if (is_open(impl))
   {
     ec = asio::error::already_open;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -113,6 +114,7 @@ asio::error_code reactive_descriptor_service::assign(
   {
     ec = asio::error_code(err,
         asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -151,6 +153,7 @@ asio::error_code reactive_descriptor_service::close(
   // We'll just have to assume that other OSes follow the same behaviour.)
   construct(impl);
 
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -180,6 +183,7 @@ asio::error_code reactive_descriptor_service::cancel(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 

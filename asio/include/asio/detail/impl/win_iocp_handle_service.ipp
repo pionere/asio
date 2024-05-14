@@ -182,11 +182,13 @@ asio::error_code win_iocp_handle_service::assign(
   if (is_open(impl))
   {
     ec = asio::error::already_open;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
   if (iocp_service_.register_handle(handle, ec))
   {
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -223,6 +225,7 @@ asio::error_code win_iocp_handle_service::close(
     ec = asio::error_code();
   }
 
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -233,6 +236,7 @@ asio::error_code win_iocp_handle_service::cancel(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -293,6 +297,7 @@ asio::error_code win_iocp_handle_service::cancel(
     ec = asio::error::operation_not_supported;
   }
 
+  ASIO_ERROR_LOCATION(ec);
   return ec;
 }
 
@@ -303,6 +308,7 @@ size_t win_iocp_handle_service::do_write(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -316,6 +322,7 @@ size_t win_iocp_handle_service::do_write(
   overlapped_wrapper overlapped(ec);
   if (ec)
   {
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -331,6 +338,7 @@ size_t win_iocp_handle_service::do_write(
     {
       ec = asio::error_code(last_error,
           asio::error::get_system_category());
+      ASIO_ERROR_LOCATION(ec);
       return 0;
     }
   }
@@ -344,6 +352,7 @@ size_t win_iocp_handle_service::do_write(
     DWORD last_error = ::GetLastError();
     ec = asio::error_code(last_error,
         asio::error::get_system_category());
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -395,6 +404,7 @@ size_t win_iocp_handle_service::do_read(
   if (!is_open(impl))
   {
     ec = asio::error::bad_descriptor;
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
   
@@ -408,6 +418,7 @@ size_t win_iocp_handle_service::do_read(
   overlapped_wrapper overlapped(ec);
   if (ec)
   {
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -430,6 +441,7 @@ size_t win_iocp_handle_service::do_read(
         ec = asio::error_code(last_error,
             asio::error::get_system_category());
       }
+      ASIO_ERROR_LOCATION(ec);
       return 0;
     }
   }
@@ -450,6 +462,7 @@ size_t win_iocp_handle_service::do_read(
       ec = asio::error_code(last_error,
           asio::error::get_system_category());
     }
+    ASIO_ERROR_LOCATION(ec);
     return (last_error == ERROR_MORE_DATA) ? bytes_transferred : 0;
   }
 

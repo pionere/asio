@@ -126,6 +126,8 @@ public:
     if (!do_open(impl, protocol.family(),
           protocol.type(), protocol.protocol(), ec))
       impl.protocol_ = protocol;
+
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -136,6 +138,8 @@ public:
   {
     if (!do_assign(impl, protocol.type(), native_socket, ec))
       impl.protocol_ = protocol;
+
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -150,6 +154,8 @@ public:
       const endpoint_type& endpoint, asio::error_code& ec)
   {
     socket_ops::bind(impl.socket_, endpoint.data(), endpoint.size(), ec);
+
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -161,6 +167,8 @@ public:
     socket_ops::setsockopt(impl.socket_, impl.state_,
         option.level(impl.protocol_), option.name(impl.protocol_),
         option.data(impl.protocol_), option.size(impl.protocol_), ec);
+
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -175,6 +183,8 @@ public:
         option.data(impl.protocol_), &size, ec);
     if (!ec)
       option.resize(impl.protocol_, size);
+
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -186,6 +196,7 @@ public:
     std::size_t addr_len = endpoint.capacity();
     if (socket_ops::getsockname(impl.socket_, endpoint.data(), &addr_len, ec))
     {
+      ASIO_ERROR_LOCATION(ec);
       return endpoint_type();
     }
     endpoint.resize(addr_len);
@@ -201,6 +212,7 @@ public:
     if (socket_ops::getpeername(impl.socket_,
           endpoint.data(), &addr_len, false, ec))
     {
+      ASIO_ERROR_LOCATION(ec);
       return endpoint_type();
     }
     endpoint.resize(addr_len);
@@ -212,6 +224,8 @@ public:
       socket_base::shutdown_type what, asio::error_code& ec)
   {
     socket_ops::shutdown(impl.socket_, what, ec);
+
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -225,9 +239,15 @@ public:
     buffer_sequence_adapter<asio::const_buffer,
         ConstBufferSequence> bufs(buffers);
 
-    return socket_ops::sync_sendto(impl.socket_, impl.state_,
-        bufs.buffers(), bufs.count(), flags,
-        destination.data(), destination.size(), ec);
+    size_t n;
+    {
+      n = socket_ops::sync_sendto(impl.socket_, impl.state_,
+          bufs.buffers(), bufs.count(), flags,
+          destination.data(), destination.size(), ec);
+	}
+
+    ASIO_ERROR_LOCATION(ec);
+    return n;
   }
 
   // Wait until data can be sent without blocking.
@@ -238,6 +258,7 @@ public:
     // Wait for socket to become ready.
     socket_ops::poll_write(impl.socket_, impl.state_, -1, ec);
 
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -310,6 +331,7 @@ public:
     if (!ec)
       sender_endpoint.resize(addr_len);
 
+    ASIO_ERROR_LOCATION(ec);
     return n;
   }
 
@@ -324,6 +346,7 @@ public:
     // Reset endpoint since it can be given no sensible value at this time.
     sender_endpoint = endpoint_type();
 
+    ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -395,6 +418,7 @@ public:
     if (peer.is_open())
     {
       ec = asio::error::already_open;
+      ASIO_ERROR_LOCATION(ec);
       return ec;
     }
 
@@ -413,6 +437,7 @@ public:
         new_socket.release();
     }
 
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -495,6 +520,7 @@ public:
   {
     socket_ops::sync_connect(impl.socket_,
         peer_endpoint.data(), peer_endpoint.size(), ec);
+    ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 

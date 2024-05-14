@@ -126,6 +126,8 @@ public:
 
     ASIO_HANDLER_COMPLETION((*o));
 
+    ASIO_ERROR_LOCATION(ec);
+
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
     // sub-object of the handler may be the true owner of the memory associated
@@ -251,6 +253,8 @@ public:
     }
 
     ASIO_HANDLER_COMPLETION((*o));
+
+    ASIO_ERROR_LOCATION(ec);
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a

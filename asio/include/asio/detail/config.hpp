@@ -118,37 +118,6 @@
 # include <android/api-level.h>
 #endif // defined(__ANDROID__)
 
-// Support move construction and assignment on compilers known to allow it.
-#if !defined(ASIO_HAS_MOVE)
-# if !defined(ASIO_DISABLE_MOVE)
-#  if defined(__clang__)
-#   if __has_feature(__cxx_rvalue_references__)
-#    define ASIO_HAS_MOVE 1
-#   endif // __has_feature(__cxx_rvalue_references__)
-#  endif // defined(__clang__)
-#  if defined(__GNUC__)
-#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 5)) || (__GNUC__ > 4)
-#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#     define ASIO_HAS_MOVE 1
-#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 5)) || (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-#  if defined(ASIO_MSVC)
-#   if (_MSC_VER >= 1700)
-#    define ASIO_HAS_MOVE 1
-#   endif // (_MSC_VER >= 1700)
-#  endif // defined(ASIO_MSVC)
-#  if defined(__INTEL_CXX11_MODE__)
-#    if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1500)
-#      define BOOST_ASIO_HAS_MOVE 1
-#    endif // defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1500)
-#    if defined(__ICL) && (__ICL >= 1500)
-#      define BOOST_ASIO_HAS_MOVE 1
-#    endif // defined(__ICL) && (__ICL >= 1500)
-#  endif // defined(__INTEL_CXX11_MODE__)
-# endif // !defined(ASIO_DISABLE_MOVE)
-#endif // !defined(ASIO_HAS_MOVE)
-
 // Always enabled. Retained for backwards compatibility in user code.
 #if !defined(ASIO_DISABLE_CXX11_MACROS)
 # define ASIO_HAS_MOVE 1
@@ -208,6 +177,37 @@
 # define ASIO_HAS_STD_NESTED_EXCEPTION 1
 # define ASIO_HAS_STD_HASH 1
 #endif // !defined(ASIO_DISABLE_CXX11_MACROS)
+
+// Support move construction and assignment on compilers known to allow it.
+#if !defined(ASIO_HAS_MOVE)
+# if !defined(ASIO_DISABLE_MOVE)
+#  if defined(__clang__)
+#   if __has_feature(__cxx_rvalue_references__)
+#    define ASIO_HAS_MOVE 1
+#   endif // __has_feature(__cxx_rvalue_references__)
+#  endif // defined(__clang__)
+#  if defined(__GNUC__)
+#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 5)) || (__GNUC__ > 4)
+#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
+#     define ASIO_HAS_MOVE 1
+#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
+#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 5)) || (__GNUC__ > 4)
+#  endif // defined(__GNUC__)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1700)
+#    define ASIO_HAS_MOVE 1
+#   endif // (_MSC_VER >= 1700)
+#  endif // defined(ASIO_MSVC)
+#  if defined(__INTEL_CXX11_MODE__)
+#    if defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1500)
+#      define BOOST_ASIO_HAS_MOVE 1
+#    endif // defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1500)
+#    if defined(__ICL) && (__ICL >= 1500)
+#      define BOOST_ASIO_HAS_MOVE 1
+#    endif // defined(__ICL) && (__ICL >= 1500)
+#  endif // defined(__INTEL_CXX11_MODE__)
+# endif // !defined(ASIO_DISABLE_MOVE)
+#endif // !defined(ASIO_HAS_MOVE)
 
 // If ASIO_MOVE_CAST isn't defined, and move support is available, define
 // ASIO_MOVE_ARG and ASIO_MOVE_CAST to take advantage of rvalue

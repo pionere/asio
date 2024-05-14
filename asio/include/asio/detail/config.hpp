@@ -232,6 +232,38 @@
 # endif // defined(ASIO_HAS_CONSTEXPR)
 #endif // !defined(ASIO_CONSTEXPR)
 
+// Support noexcept on compilers known to allow it.
+#if !defined(ASIO_NOEXCEPT)
+# if !defined(ASIO_DISABLE_NOEXCEPT)
+#  if defined(ASIO_HAS_BOOST_CONFIG) && (BOOST_VERSION >= 105300)
+#   define ASIO_NOEXCEPT BOOST_NOEXCEPT
+#   define ASIO_NOEXCEPT_OR_NOTHROW BOOST_NOEXCEPT_OR_NOTHROW
+#  elif defined(__clang__)
+#   if __has_feature(__cxx_noexcept__)
+#    define ASIO_NOEXCEPT noexcept(true)
+#    define ASIO_NOEXCEPT_OR_NOTHROW noexcept(true)
+#   endif // __has_feature(__cxx_noexcept__)
+#  elif defined(__GNUC__)
+#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
+#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
+#      define ASIO_NOEXCEPT noexcept(true)
+#      define ASIO_NOEXCEPT_OR_NOTHROW noexcept(true)
+#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
+#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
+#  elif defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1900)
+#    define ASIO_NOEXCEPT noexcept(true)
+#    define ASIO_NOEXCEPT_OR_NOTHROW noexcept(true)
+#   endif // (_MSC_VER >= 1900)
+#  endif // defined(ASIO_MSVC)
+# endif // !defined(ASIO_DISABLE_NOEXCEPT)
+# if !defined(ASIO_NOEXCEPT)
+#  define ASIO_NOEXCEPT
+# endif // !defined(ASIO_NOEXCEPT)
+# if !defined(ASIO_NOEXCEPT_OR_NOTHROW)
+#  define ASIO_NOEXCEPT_OR_NOTHROW throw()
+# endif // !defined(ASIO_NOEXCEPT_OR_NOTHROW)
+#endif // !defined(ASIO_NOEXCEPT)
 
 // Support automatic type deduction on compilers known to support it.
 #if !defined(ASIO_HAS_DECLTYPE)
@@ -1439,6 +1471,31 @@
 # endif // defined(__clang__)
 #endif // !defined(ASIO_HAS_CO_AWAIT)
 
+// Standard library support for coroutines.
+#if !defined(ASIO_HAS_STD_COROUTINE)
+# if !defined(ASIO_DISABLE_STD_COROUTINE)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
+#    define ASIO_HAS_STD_COROUTINE 1
+#   endif // (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
+#  elif defined(__clang__)
+#   if (__clang_major__ >= 14)
+#    if (__cplusplus >= 202002) && (__cpp_impl_coroutine >= 201902)
+#     if __has_include(<coroutine>)
+#      define ASIO_HAS_STD_COROUTINE 1
+#     endif // __has_include(<coroutine>)
+#    endif // (__cplusplus >= 202002) && (__cpp_impl_coroutine >= 201902)
+#   endif // (__clang_major__ >= 14)
+#  elif defined(__GNUC__)
+#   if (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
+#    if __has_include(<coroutine>)
+#     define ASIO_HAS_STD_COROUTINE 1
+#    endif // __has_include(<coroutine>)
+#   endif // (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
+#  endif // defined(__GNUC__)
+# endif // !defined(ASIO_DISABLE_STD_COROUTINE)
+#endif // !defined(ASIO_HAS_STD_COROUTINE)
+
 // Compiler support for the the [[nodiscard]] attribute.
 #if !defined(ASIO_NODISCARD)
 # if defined(__has_cpp_attribute)
@@ -1452,5 +1509,49 @@
 #if !defined(ASIO_NODISCARD)
 # define ASIO_NODISCARD
 #endif // !defined(ASIO_NODISCARD)
+
+// Kernel support for MSG_NOSIGNAL.
+#if !defined(ASIO_HAS_MSG_NOSIGNAL)
+# if defined(__linux__)
+#  define ASIO_HAS_MSG_NOSIGNAL 1
+# elif defined(_POSIX_VERSION)
+#  if (_POSIX_VERSION >= 200809L)
+#   define ASIO_HAS_MSG_NOSIGNAL 1
+#  endif // _POSIX_VERSION >= 200809L
+# endif // defined(_POSIX_VERSION)
+#endif // !defined(ASIO_HAS_MSG_NOSIGNAL)
+
+// Standard library support for std::to_address.
+#if !defined(ASIO_HAS_STD_TO_ADDRESS)
+# if !defined(ASIO_DISABLE_STD_TO_ADDRESS)
+#  if defined(__clang__)
+#   if (__cplusplus >= 202002)
+#    define ASIO_HAS_STD_TO_ADDRESS 1
+#   endif // (__cplusplus >= 202002)
+#  elif defined(__GNUC__)
+#   if (__GNUC__ >= 8)
+#    if (__cplusplus >= 202002)
+#     define ASIO_HAS_STD_TO_ADDRESS 1
+#    endif // (__cplusplus >= 202002)
+#   endif // (__GNUC__ >= 8)
+#  endif // defined(__GNUC__)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1922) && (_MSVC_LANG >= 202002)
+#    define ASIO_HAS_STD_TO_ADDRESS 1
+#   endif // (_MSC_VER >= 1922) && (_MSVC_LANG >= 202002)
+#  endif // defined(ASIO_MSVC)
+# endif // !defined(ASIO_DISABLE_STD_TO_ADDRESS)
+#endif // !defined(ASIO_HAS_STD_TO_ADDRESS)
+
+// Standard library support for snprintf.
+#if !defined(ASIO_HAS_SNPRINTF)
+# if !defined(ASIO_DISABLE_SNPRINTF)
+#  if defined(__apple_build_version__)
+#    if (__clang_major__ >= 14)
+#     define ASIO_HAS_SNPRINTF 1
+#    endif // (__clang_major__ >= 14)
+#  endif // defined(__apple_build_version__)
+# endif // !defined(ASIO_DISABLE_SNPRINTF)
+#endif // !defined(ASIO_HAS_SNPRINTF)
 
 #endif // ASIO_DETAIL_CONFIG_HPP

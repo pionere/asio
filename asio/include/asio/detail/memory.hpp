@@ -18,11 +18,6 @@
 #include "asio/detail/config.hpp"
 #include <memory>
 
-#if !defined(ASIO_HAS_STD_SHARED_PTR)
-# include <boost/shared_ptr.hpp>
-# include <boost/weak_ptr.hpp>
-#endif // !defined(ASIO_HAS_STD_SHARED_PTR)
-
 #if !defined(ASIO_HAS_STD_ADDRESSOF)
 # include <boost/utility/addressof.hpp>
 #endif // !defined(ASIO_HAS_STD_ADDRESSOF)
@@ -30,13 +25,8 @@
 namespace asio {
 namespace detail {
 
-#if defined(ASIO_HAS_STD_SHARED_PTR)
 using std::shared_ptr;
 using std::weak_ptr;
-#else // defined(ASIO_HAS_STD_SHARED_PTR)
-using boost::shared_ptr;
-using boost::weak_ptr;
-#endif // defined(ASIO_HAS_STD_SHARED_PTR)
 
 #if defined(ASIO_HAS_STD_ADDRESSOF)
 using std::addressof;

@@ -244,6 +244,29 @@
 # define ASIO_MOVE_CAST2(type1, type2) static_cast<const type1, type2&>
 #endif // !defined(ASIO_MOVE_CAST)
 
+// Support variadic templates on compilers known to allow it.
+#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
+# if !defined(ASIO_DISABLE_VARIADIC_TEMPLATES)
+#  if defined(__clang__)
+#   if __has_feature(__cxx_variadic_templates__)
+#    define ASIO_HAS_VARIADIC_TEMPLATES 1
+#   endif // __has_feature(__cxx_variadic_templates__)
+#  endif // defined(__clang__)
+#  if defined(__GNUC__)
+#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 4)
+#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
+#     define ASIO_HAS_VARIADIC_TEMPLATES 1
+#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
+#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 4)
+#  endif // defined(__GNUC__)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1900)
+#    define ASIO_HAS_VARIADIC_TEMPLATES 1
+#   endif // (_MSC_VER >= 1900)
+#  endif // defined(ASIO_MSVC)
+# endif // !defined(ASIO_DISABLE_VARIADIC_TEMPLATES)
+#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
+
 // Support deleted functions on compilers known to allow it.
 #if !defined(ASIO_DELETED)
 # if defined(__GNUC__)
@@ -460,29 +483,6 @@
 #  endif // defined(ASIO_MSVC)
 # endif // !defined(ASIO_DISABLE_ALIAS_TEMPLATES)
 #endif // !defined(ASIO_HAS_ALIAS_TEMPLATES)
-
-// Support variadic templates on compilers known to allow it.
-#if !defined(ASIO_HAS_VARIADIC_TEMPLATES)
-# if !defined(ASIO_DISABLE_VARIADIC_TEMPLATES)
-#  if defined(__clang__)
-#   if __has_feature(__cxx_variadic_templates__)
-#    define ASIO_HAS_VARIADIC_TEMPLATES 1
-#   endif // __has_feature(__cxx_variadic_templates__)
-#  endif // defined(__clang__)
-#  if defined(__GNUC__)
-#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 4)
-#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#     define ASIO_HAS_VARIADIC_TEMPLATES 1
-#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-#  if defined(ASIO_MSVC)
-#   if (_MSC_VER >= 1900)
-#    define ASIO_HAS_VARIADIC_TEMPLATES 1
-#   endif // (_MSC_VER >= 1900)
-#  endif // defined(ASIO_MSVC)
-# endif // !defined(ASIO_DISABLE_VARIADIC_TEMPLATES)
-#endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
 // Support SFINAEd template variables on compilers known to allow it.
 #if !defined(ASIO_HAS_SFINAE_VARIABLE_TEMPLATES)

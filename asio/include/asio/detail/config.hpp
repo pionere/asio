@@ -484,6 +484,30 @@
 # endif // !defined(ASIO_DISABLE_ALIAS_TEMPLATES)
 #endif // !defined(ASIO_HAS_ALIAS_TEMPLATES)
 
+// Support template variables on compilers known to allow it.
+#if !defined(ASIO_HAS_VARIABLE_TEMPLATES)
+# if !defined(ASIO_DISABLE_VARIABLE_TEMPLATES)
+#  if defined(__clang__)
+#   if (__cplusplus >= 201402)
+#    if __has_feature(__cxx_variable_templates__)
+#     define ASIO_HAS_VARIABLE_TEMPLATES 1
+#    endif // __has_feature(__cxx_variable_templates__)
+#   endif // (__cplusplus >= 201402)
+#  elif defined(__GNUC__) && !defined(__INTEL_COMPILER)
+#   if (__GNUC__ >= 6)
+#    if (__cplusplus >= 201402)
+#     define ASIO_HAS_VARIABLE_TEMPLATES 1
+#    endif // (__cplusplus >= 201402)
+#   endif // (__GNUC__ >= 6)
+#  endif // defined(__GNUC__) && !defined(__INTEL_COMPILER)
+#  if defined(ASIO_MSVC)
+#   if (_MSC_VER >= 1901)
+#    define ASIO_HAS_VARIABLE_TEMPLATES 1
+#   endif // (_MSC_VER >= 1901)
+#  endif // defined(ASIO_MSVC)
+# endif // !defined(ASIO_DISABLE_VARIABLE_TEMPLATES)
+#endif // !defined(ASIO_HAS_VARIABLE_TEMPLATES)
+
 // Support SFINAEd template variables on compilers known to allow it.
 #if !defined(ASIO_HAS_SFINAE_VARIABLE_TEMPLATES)
 # if !defined(ASIO_DISABLE_SFINAE_VARIABLE_TEMPLATES)

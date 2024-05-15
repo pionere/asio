@@ -328,10 +328,18 @@ namespace detail
 
     void operator()(asio::error_code ec, int start = 0)
     {
-      typename EndpointSequence::const_iterator begin = endpoints_.begin();
-      typename EndpointSequence::const_iterator iter = begin;
+      this->process(ec, start,
+          const_cast<const EndpointSequence&>(endpoints_).begin(),
+          const_cast<const EndpointSequence&>(endpoints_).end());
+    }
+
+  //private:
+    template <typename Iterator>
+    void process(asio::error_code ec,
+        int start, Iterator begin, Iterator end)
+    {
+      Iterator iter = begin;
       std::advance(iter, index_);
-      typename EndpointSequence::const_iterator end = endpoints_.end();
 
       switch (start_ = start)
       {
@@ -383,7 +391,6 @@ namespace detail
       }
     }
 
-  //private:
     basic_socket<Protocol ASIO_SVC_TARG>& socket_;
     EndpointSequence endpoints_;
     std::size_t index_;

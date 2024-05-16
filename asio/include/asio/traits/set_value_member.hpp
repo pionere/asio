@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 
 #if defined(ASIO_HAS_DECLTYPE) \
   && defined(ASIO_HAS_NOEXCEPT) \

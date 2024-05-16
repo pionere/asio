@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 #include "asio/execution/set_done.hpp"
 #include "asio/execution/set_error.hpp"
 #include "asio/execution/set_value.hpp"

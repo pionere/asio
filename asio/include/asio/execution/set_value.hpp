@@ -17,7 +17,6 @@
 
 #include "asio/detail/config.hpp"
 #include "asio/detail/type_traits.hpp"
-#include "asio/detail/variadic_templates.hpp"
 #include "asio/traits/set_value_member.hpp"
 #include "asio/traits/set_value_free.hpp"
 
